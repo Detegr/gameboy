@@ -1,8 +1,9 @@
 #include "cpu.h"
+#define CYCLES(X) (c->c+=X)
 
 void NOP(CPU* c, MMU* m)
 {
-	c->c+=4;
+	CYCLES(4);
 }
 
 void LDBCnn(CPU* c, MMU* m)
@@ -27,6 +28,8 @@ void DECB(CPU* c, MMU* m)
 
 void LDBn(CPU* c, MMU* m)
 {
+	c->reg.B=m[c->PC++];
+	CYCLES(8);
 }
 
 void RLCA(CPU* c, MMU* m)
@@ -59,6 +62,8 @@ void DECC(CPU* c, MMU* m)
 
 void LDCn(CPU* c, MMU* m)
 {
+	c->reg.C=m[c->PC++];
+	CYCLES(8);
 }
 
 void RRCA(CPU* c, MMU* m)
@@ -93,6 +98,8 @@ void DECD(CPU* c, MMU* m)
 
 void LDDn(CPU* c, MMU* m)
 {
+	c->reg.D=m[c->PC++];
+	CYCLES(8);
 }
 
 void RLA(CPU* c, MMU* m)
@@ -125,6 +132,8 @@ void DECE(CPU* c, MMU* m)
 
 void LDEn(CPU* c, MMU* m)
 {
+	c->reg.E=m[c->PC++];
+	CYCLES(8);
 }
 
 void RRA(CPU* c, MMU* m)
@@ -159,6 +168,8 @@ void DECH(CPU* c, MMU* m)
 
 void LDHn(CPU* c, MMU* m)
 {
+	c->reg.H=m[c->PC++];
+	CYCLES(8);
 }
 
 void DAA(CPU* c, MMU* m)
@@ -191,6 +202,8 @@ void DECL(CPU* c, MMU* m)
 
 void LDLn(CPU* c, MMU* m)
 {
+	c->reg.L=m[c->PC++];
+	CYCLES(8);
 }
 
 void CPL(CPU* c, MMU* m)
@@ -1006,3 +1019,5 @@ void CPn(CPU* c, MMU* m)
 void RST38(CPU* c, MMU* m)
 {
 }
+
+int main(){} // For compiling to check typos
