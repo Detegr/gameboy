@@ -327,36 +327,52 @@ void LDBA(CPU* c, MMU* m)
 	CYCLES(4);
 }
 
-void LDBCB(CPU* c, MMU* m)
+void LDCB(CPU* c, MMU* m)
 {
+	c->reg.C=c->reg.B;
+	CYCLES(4);
 }
 
 void LDCC(CPU* c, MMU* m)
 {
+	c->reg.C=c->reg.C;
+	CYCLES(4);
 }
 
 void LDCD(CPU* c, MMU* m)
 {
+	c->reg.C=c->reg.D;
+	CYCLES(4);
 }
 
 void LDCE(CPU* c, MMU* m)
 {
+	c->reg.C=c->reg.E;
+	CYCLES(4);
 }
 
 void LDCH(CPU* c, MMU* m)
 {
+	c->reg.C=c->reg.H;
+	CYCLES(4);
 }
 
 void LDCL(CPU* c, MMU* m)
 {
+	c->reg.C=c->reg.L;
+	CYCLES(4);
 }
 
 void LDCHL(CPU* c, MMU* m)
 {
+	c->reg.C=m[WORD(c->reg.H, c->reg.L)];
+	CYCLES(8);
 }
 
 void LDCA(CPU* c, MMU* m)
 {
+	c->reg.C=c->reg.A;
+	CYCLES(4);
 }
 
 /* -- */
