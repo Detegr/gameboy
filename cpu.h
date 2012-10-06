@@ -28,6 +28,7 @@ typedef struct Z80CPU
 	uint16_t SP; /* Stack Pointer */
 	uint16_t PC; /* Program Counter, set to 0x100 on power up */
 
+	unsigned char halt; /* Is the CPU halted? */
 	unsigned int c; /* Total time in clock cycles (*4 of machine cycles) */
 	MMU MMU[65536];
 } CPU;
@@ -160,7 +161,7 @@ void LDHLD(CPU* c, MMU* m);
 void LDHLE(CPU* c, MMU* m);
 void LDHLH(CPU* c, MMU* m);
 void LDHLL(CPU* c, MMU* m);
-void LDHLHL(CPU* c, MMU* m);
+void HALT(CPU* c, MMU* m);
 void LDHLA(CPU* c, MMU* m);
 void LDAB(CPU* c, MMU* m);
 void LDAC(CPU* c, MMU* m);
@@ -303,7 +304,7 @@ OpCode OpCodes[256]={
     &LDBB, &LDBC, &LDBD, &LDBE, &LDBH, &LDBL, &LDBHL, &LDBA, &LDCB, &LDCC, &LDCD, &LDCE, &LDCH, &LDCL, &LDCHL, &LDCA, 
     &LDDB, &LDDC, &LDDD, &LDDE, &LDDH, &LDDL, &LDDHL, &LDDA, &LDEB, &LDEC, &LDED, &LDEE, &LDEH, &LDEL, &LDEHL, &LDEA, 
     &LDHB, &LDHC, &LDHD, &LDHE, &LDHH, &LDHL, &LDHHL, &LDHA, &LDLB, &LDLC, &LDLD, &LDLE, &LDLH, &LDLL, &LDLHL, &LDLA, 
-    &LDHLB, &LDHLC, &LDHLD, &LDHLE, &LDHLH, &LDHLL, &LDHLHL, &LDHLA, &LDAB, &LDAC, &LDAD, &LDAE, &LDAH, &LDAL, &LDAHL, &LDAA, 
+    &LDHLB, &LDHLC, &LDHLD, &LDHLE, &LDHLH, &LDHLL, &HALT, &LDHLA, &LDAB, &LDAC, &LDAD, &LDAE, &LDAH, &LDAL, &LDAHL, &LDAA, 
     &ADDAB, &ADDAC, &ADDAD, &ADDAE, &ADDAH, &ADDAL, &ADDAHL, &ADDAA, &ADCAB, &ADCAC, &ADCAD, &ADCAE, &ADCAH, &ADCAL, &ADCAHL, &ADCAA, 
     &SUBAB, &SUBAC, &SUBAD, &SUBAE, &SUBAH, &SUBAL, &SUBAHL, &SUBAA, &SBCAB, &SBCAC, &SBCAD, &SBCAE, &SBCAH, &SBCAL, &SBCAHL, &SBCAA, 
     &ANDB, &ANDC, &ANDD, &ANDE, &ANDH, &ANDL, &ANDHL, &ANDA, &XORB, &XORC, &XORD, &XORE, &XORH, &XORL, &XORHL, &XORA, 

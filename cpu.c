@@ -379,166 +379,246 @@ void LDCA(CPU* c, MMU* m)
 
 void LDDB(CPU* c, MMU* m)
 {
+	c->reg.D=c->reg.B;
+	CYCLES(4);
 }
 
 void LDDC(CPU* c, MMU* m)
 {
+	c->reg.D=c->reg.C;
+	CYCLES(4);
 }
 
 void LDDD(CPU* c, MMU* m)
 {
+	c->reg.D=c->reg.D;
+	CYCLES(4);
 }
 
 void LDDE(CPU* c, MMU* m)
 {
+	c->reg.D=c->reg.E;
+	CYCLES(4);
 }
 
 void LDDH(CPU* c, MMU* m)
 {
+	c->reg.D=c->reg.H;
+	CYCLES(4);
 }
 
 void LDDL(CPU* c, MMU* m)
 {
+	c->reg.D=c->reg.L;
+	CYCLES(4);
 }
 
 void LDDHL(CPU* c, MMU* m)
 {
+	c->reg.D=m[WORD(c->reg.H, c->reg.L)];
+	CYCLES(8);
 }
 
 void LDDA(CPU* c, MMU* m)
 {
+	c->reg.D=c->reg.A;
+	CYCLES(4);
 }
 
 void LDEB(CPU* c, MMU* m)
 {
+	c->reg.E=c->reg.B;
+	CYCLES(4);
 }
 
 void LDEC(CPU* c, MMU* m)
 {
+	c->reg.E=c->reg.C;
+	CYCLES(4);
 }
 
 void LDED(CPU* c, MMU* m)
 {
+	c->reg.E=c->reg.D;
+	CYCLES(4);
 }
 
 void LDEE(CPU* c, MMU* m)
 {
+	c->reg.E=c->reg.E;
+	CYCLES(4);
 }
 
 void LDEH(CPU* c, MMU* m)
 {
+	c->reg.E=c->reg.H;
+	CYCLES(4);
 }
 
 void LDEL(CPU* c, MMU* m)
 {
+	c->reg.E=c->reg.L;
+	CYCLES(4);
 }
 
 void LDEHL(CPU* c, MMU* m)
 {
+	c->reg.E=m[WORD(c->reg.H, c->reg.L)];
+	CYCLES(8);
 }
 
 void LDEA(CPU* c, MMU* m)
 {
+	c->reg.E=c->reg.A;
+	CYCLES(4);
 }
 
 /* -- */
 
 void LDHB(CPU* c, MMU* m)
 {
+	c->reg.H=c->reg.B;
+	CYCLES(4);
 }
 
 void LDHC(CPU* c, MMU* m)
 {
+	c->reg.H=c->reg.C;
+	CYCLES(4);
 }
 
 void LDHD(CPU* c, MMU* m)
 {
+	c->reg.H=c->reg.D;
+	CYCLES(4);
 }
 
 void LDHE(CPU* c, MMU* m)
 {
+	c->reg.H=c->reg.E;
+	CYCLES(4);
 }
 
 void LDHH(CPU* c, MMU* m)
 {
+	c->reg.H=c->reg.H;
+	CYCLES(4);
 }
 
 void LDHL(CPU* c, MMU* m)
 {
+	c->reg.H=c->reg.L;
+	CYCLES(4);
 }
 
 void LDHHL(CPU* c, MMU* m)
 {
+	c->reg.H=m[WORD(c->reg.H, c->reg.L)];
+	CYCLES(8);
 }
 
 void LDHA(CPU* c, MMU* m)
 {
+	c->reg.H=c->reg.A;
+	CYCLES(4);
 }
 
 void LDLB(CPU* c, MMU* m)
 {
+	c->reg.L=c->reg.B;
+	CYCLES(4);
 }
 
 void LDLC(CPU* c, MMU* m)
 {
+	c->reg.L=c->reg.C;
+	CYCLES(4);
 }
 
 void LDLD(CPU* c, MMU* m)
 {
+	c->reg.L=c->reg.D;
+	CYCLES(4);
 }
 
 void LDLE(CPU* c, MMU* m)
 {
+	c->reg.L=c->reg.E;
+	CYCLES(4);
 }
 
 void LDLH(CPU* c, MMU* m)
 {
+	c->reg.L=c->reg.H;
+	CYCLES(4);
 }
 
 void LDLL(CPU* c, MMU* m)
 {
+	c->reg.L=c->reg.L;
+	CYCLES(4);
 }
 
 void LDLHL(CPU* c, MMU* m)
 {
+	c->reg.L=m[WORD(c->reg.H, c->reg.L)];
+	CYCLES(8);
 }
 
 void LDLA(CPU* c, MMU* m)
 {
+	c->reg.L=c->reg.A;
+	CYCLES(4);
 }
 
 /* -- */
 
 void LDHLB(CPU* c, MMU* m)
 {
+	m[WORD(c->reg.H, c->reg.L)]=c->reg.B;
+	CYCLES(8);
 }
 
 void LDHLC(CPU* c, MMU* m)
 {
+	m[WORD(c->reg.H, c->reg.L)]=c->reg.C;
+	CYCLES(8);
 }
 
 void LDHLD(CPU* c, MMU* m)
 {
+	m[WORD(c->reg.H, c->reg.L)]=c->reg.D;
+	CYCLES(8);
 }
 
 void LDHLE(CPU* c, MMU* m)
 {
+	m[WORD(c->reg.H, c->reg.L)]=c->reg.E;
+	CYCLES(8);
 }
 
 void LDHLH(CPU* c, MMU* m)
 {
+	m[WORD(c->reg.H, c->reg.L)]=c->reg.H;
+	CYCLES(8);
 }
 
 void LDHLL(CPU* c, MMU* m)
 {
+	m[WORD(c->reg.H, c->reg.L)]=c->reg.L;
+	CYCLES(8);
 }
 
-void LDHLHL(CPU* c, MMU* m)
+void HALT(CPU* c, MMU* m)
 {
+	c->halt=1;
+	CYCLES(4);
 }
 
 void LDHLA(CPU* c, MMU* m)
 {
+	m[WORD(c->reg.H, c->reg.L)]=c->reg.A;
+	CYCLES(8);
 }
 
 void LDAB(CPU* c, MMU* m)
