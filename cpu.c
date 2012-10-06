@@ -1,6 +1,9 @@
 #include "cpu.h"
 #define CYCLES(X) (c->c+=X)
 #define WORD(X,Y) ((X<<8)|Y)
+#define INCnn(B,A); A++; A &= 0xFF; if(!A) { B++; B &= 0xFF; }
+
+/* 0 */
 
 void NOP(CPU* c, MMU* m)
 {
@@ -9,18 +12,30 @@ void NOP(CPU* c, MMU* m)
 
 void LDBCnn(CPU* c, MMU* m)
 {
+	/* Immediate values are in little-endian order, */
+	/* so least significant bits are loaded first. */
+	c->reg.C=m[c->PC++];
+	c->reg.B=m[c->PC++];
+	CYCLES(12);
 }
 
 void LDBCA(CPU* c, MMU* m)
 {
+	m[WORD(c->reg.B, c->reg.C)]=c->reg.A;
+	CYCLES(8);
 }
 
 void INCBC(CPU* c, MMU* m)
 {
+	INCnn(c->reg.B, c->reg.C);
+	CYCLES(8);
 }
 
 void INCB(CPU* c, MMU* m)
 {
+	c->reg.B++;
+	if(!c->reg.B) c->reg.F |= ZERO;
+	c->reg.F &= ~SUBTRACT; /* Reset N flag */
 }
 
 void DECB(CPU* c, MMU* m)
@@ -71,7 +86,7 @@ void RRCA(CPU* c, MMU* m)
 {
 }
 
-/* --- */
+/* 1 */
 
 void STOP(CPU* c, MMU* m)
 {
@@ -141,7 +156,7 @@ void RRA(CPU* c, MMU* m)
 {
 }
 
-/* --- */
+/* 2 */
 
 void JRNZn(CPU* c, MMU* m)
 {
@@ -211,7 +226,7 @@ void CPL(CPU* c, MMU* m)
 {
 }
 
-/* -- */
+/* 3 */
 
 void JRNCn(CPU* c, MMU* m)
 {
@@ -277,7 +292,7 @@ void CCF(CPU* c, MMU* m)
 {
 }
 
-/* -- */
+/* 4 */
 
 void LDBB(CPU* c, MMU* m)
 {
@@ -375,7 +390,7 @@ void LDCA(CPU* c, MMU* m)
 	CYCLES(4);
 }
 
-/* -- */
+/* 5 */
 
 void LDDB(CPU* c, MMU* m)
 {
@@ -473,7 +488,7 @@ void LDEA(CPU* c, MMU* m)
 	CYCLES(4);
 }
 
-/* -- */
+/* 6 */
 
 void LDHB(CPU* c, MMU* m)
 {
@@ -571,7 +586,7 @@ void LDLA(CPU* c, MMU* m)
 	CYCLES(4);
 }
 
-/* -- */
+/* 7 */
 
 void LDHLB(CPU* c, MMU* m)
 {
@@ -669,7 +684,7 @@ void LDAA(CPU* c, MMU* m)
 	CYCLES(4);
 }
 
-/* -- */
+/* 8 */
 
 void ADDAB(CPU* c, MMU* m)
 {
@@ -735,7 +750,7 @@ void ADCAA(CPU* c, MMU* m)
 {
 }
 
-/* -- */
+/* 9 */
 
 void SUBAB(CPU* c, MMU* m)
 {
@@ -801,7 +816,7 @@ void SBCAA(CPU* c, MMU* m)
 {
 }
 
-/* -- */
+/* A */
 
 void ANDB(CPU* c, MMU* m)
 {
@@ -867,7 +882,7 @@ void XORA(CPU* c, MMU* m)
 {
 }
 
-/* -- */
+/* B */
 
 void ORB(CPU* c, MMU* m)
 {
@@ -933,7 +948,7 @@ void CPA(CPU* c, MMU* m)
 {
 }
 
-/* -- */
+/* C */
 
 void ETNZ(CPU* c, MMU* m)
 {
@@ -999,7 +1014,7 @@ void RST8(CPU* c, MMU* m)
 {
 }
 
-/* -- */
+/* D */
 
 void RETNC(CPU* c, MMU* m)
 {
@@ -1053,7 +1068,7 @@ void RST18(CPU* c, MMU* m)
 {
 }
 
-/* -- */
+/* E */
 
 void LDHnA(CPU* c, MMU* m)
 {
@@ -1099,7 +1114,7 @@ void RST28(CPU* c, MMU* m)
 {
 }
 
-/* -- */
+/* F */
 
 void LDHAn(CPU* c, MMU* m)
 {
