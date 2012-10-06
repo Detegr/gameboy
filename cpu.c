@@ -1,5 +1,6 @@
 #include "cpu.h"
 #define CYCLES(X) (c->c+=X)
+#define WORD(X,Y) ((X<<8)|Y)
 
 void NOP(CPU* c, MMU* m)
 {
@@ -280,34 +281,50 @@ void CCF(CPU* c, MMU* m)
 
 void LDBB(CPU* c, MMU* m)
 {
+	c->reg.B=c->reg.B;
+	CYCLES(4);
 }
 
 void LDBC(CPU* c, MMU* m)
 {
+	c->reg.B=c->reg.C;
+	CYCLES(4);
 }
 
 void LDBD(CPU* c, MMU* m)
 {
+	c->reg.B=c->reg.D;
+	CYCLES(4);
 }
 
 void LDBE(CPU* c, MMU* m)
 {
+	c->reg.B=c->reg.E;
+	CYCLES(4);
 }
 
 void LDBH(CPU* c, MMU* m)
 {
+	c->reg.B=c->reg.H;
+	CYCLES(4);
 }
 
 void LDBL(CPU* c, MMU* m)
 {
+	c->reg.B=c->reg.L;
+	CYCLES(4);
 }
 
 void LDBHL(CPU* c, MMU* m)
 {
+	c->reg.B=m[WORD(c->reg.H, c->reg.L)];
+	CYCLES(8);
 }
 
 void LDBA(CPU* c, MMU* m)
 {
+	c->reg.B=c->reg.A;
+	CYCLES(4);
 }
 
 void LDBCB(CPU* c, MMU* m)
@@ -510,34 +527,50 @@ void LDHLA(CPU* c, MMU* m)
 
 void LDAB(CPU* c, MMU* m)
 {
+	c->reg.A=c->reg.B;
+	CYCLES(4);
 }
 
 void LDAC(CPU* c, MMU* m)
 {
+	c->reg.A=c->reg.C;
+	CYCLES(4);
 }
 
 void LDAD(CPU* c, MMU* m)
 {
+	c->reg.A=c->reg.D;
+	CYCLES(4);
 }
 
 void LDAE(CPU* c, MMU* m)
 {
+	c->reg.A=c->reg.E;
+	CYCLES(4);
 }
 
 void LDAH(CPU* c, MMU* m)
 {
+	c->reg.A=c->reg.H;
+	CYCLES(4);
 }
 
 void LDAL(CPU* c, MMU* m)
 {
+	c->reg.A=c->reg.L;
+	CYCLES(4);
 }
 
 void LDAHL(CPU* c, MMU* m)
 {
+	c->reg.A=m[WORD(c->reg.H, c->reg.L)];
+	CYCLES(8);
 }
 
 void LDAA(CPU* c, MMU* m)
 {
+	c->reg.A=c->reg.A;
+	CYCLES(4);
 }
 
 /* -- */
