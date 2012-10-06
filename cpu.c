@@ -1,7 +1,6 @@
 #include "cpu.h"
 #define CYCLES(X) (c->c+=X)
 #define WORD(X,Y) ((X<<8)|Y)
-#define INCnn(B,A); A++; A &= 0xFF; if(!A) { B++; B &= 0xFF; }
 
 /* 0 */
 
@@ -27,13 +26,17 @@ void LDBCA(CPU* c, MMU* m)
 
 void INCBC(CPU* c, MMU* m)
 {
-	INCnn(c->reg.B, c->reg.C);
+	if(++c->reg.C == 0) c->reg.B++;
 	CYCLES(8);
 }
 
 void INCB(CPU* c, MMU* m)
 {
 	c->reg.B++;
+	if(!(c->reg.B & 0x0F)) // Lower nibble overflown
+	{
+		c->reg.F |= HALFCARRY;
+	}
 	if(!c->reg.B) c->reg.F |= ZERO;
 	c->reg.F &= ~SUBTRACT; /* Reset N flag */
 }
