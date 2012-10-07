@@ -2,6 +2,31 @@
 #define CYCLES(X) (c->c+=X)
 #define WORD(X,Y) ((X<<8)|Y)
 
+uint8_t inc(uint8_t* reg, uint8_t* flags)
+{
+	*reg++;
+	if(!(*reg & 0x0F)) // Lower nibble overflown
+	{
+		*flags |= HALFCARRY;
+	}
+	if(!*reg) *flags |= ZERO;
+	*flags &= ~SUBTRACT; /* Reset N flag */
+	return 4;
+}
+
+uint8_t dec(uint8_t* reg, uint8_t* flags)
+{
+	*reg--;
+	*flags |= SUBTRACT;
+	/* H - Set if no borrow from bit 4, aka no overflow on lower nibble */
+	if((*reg & 0x0F) != 0x0F) // Lower nibble not overflown
+	{
+		*flags |= HALFCARRY;
+	}
+	if(!*reg) *flags |= ZERO;
+	return 4;
+}
+
 /* 0 */
 
 void NOP(CPU* c, MMU* m)
@@ -32,27 +57,12 @@ void INCBC(CPU* c, MMU* m)
 
 void INCB(CPU* c, MMU* m)
 {
-	c->reg.B++;
-	if(!(c->reg.B & 0x0F)) // Lower nibble overflown
-	{
-		c->reg.F |= HALFCARRY;
-	}
-	if(!c->reg.B) c->reg.F |= ZERO;
-	c->reg.F &= ~SUBTRACT; /* Reset N flag */
-	CYCLES(4);
+	CYCLES(inc(&c->reg.B, &c->reg.F));
 }
 
 void DECB(CPU* c, MMU* m)
 {
-	c->reg.B--;
-	c->reg.F |= SUBTRACT;
-	/* H - Set if no borrow from bit 4, aka no overflow on lower nibble */
-	if((c->reg.B & 0x0F) != 0x0F) // Lower nibble not overflown
-	{
-		c->reg.F |= HALFCARRY;
-	}
-	if(!c->reg.B) c->reg.F |= ZERO;
-	CYCLES(4);
+	CYCLES(dec(&c->reg.B, &c->reg.F));
 }
 
 void LDBn(CPU* c, MMU* m)
@@ -74,6 +84,7 @@ void RLCA(CPU* c, MMU* m)
 	{
 		c->reg.A |= 0x01;
 	}
+	if(!c->reg.A) c->reg.F |= ZERO;
 	CYCLES(4);
 }
 
@@ -92,7 +103,7 @@ void ADDHLBC(CPU* c, MMU* m)
 	uint16_t hl = WORD(c->reg.H, c->reg.L);
 	uint16_t result = hl + WORD(c->reg.B, c->reg.C);
 	if(result < hl) c->reg.F |= CARRY;
-	if(c->reg.F & CARRY || (result & 0x0FFF) < (hl & 0x0FFF))
+	if(c->reg.F & CARRY || (result & 0x0FFF) < (hl & 0x0FFF))
 	{// Carry from bit 11
 		c->reg.F |= HALFCARRY;
 	}
@@ -101,18 +112,24 @@ void ADDHLBC(CPU* c, MMU* m)
 
 void LDABC(CPU* c, MMU* m)
 {
+	c->reg.A = m[WORD(c->reg.B, c->reg.C)];
+	CYCLES(8);
 }
 
 void DECBC(CPU* c, MMU* m)
 {
+	if(--c->reg.C == 0xFF) c->reg.B--;
+	CYCLES(8);
 }
 
 void INCC(CPU* c, MMU* m)
 {
+	CYCLES(inc(&c->reg.C, &c->reg.F));
 }
 
 void DECC(CPU* c, MMU* m)
 {
+	CYCLES(dec(&c->reg.C, &c->reg.F));
 }
 
 void LDCn(CPU* c, MMU* m)
@@ -123,6 +140,19 @@ void LDCn(CPU* c, MMU* m)
 
 void RRCA(CPU* c, MMU* m)
 {
+	/* Rotate register left */
+	c->reg.F &= ~CARRY; // Reset carry flag
+	if(c->reg.A & 0x01)
+	{
+		c->reg.F |= CARRY; // Contains old bit 7 data
+	}
+	c->reg.A >>= 1;
+	if(c->reg.F & CARRY)
+	{
+		c->reg.A |= 0x80;
+	}
+	if(!c->reg.A) c->reg.F |= ZERO;
+	CYCLES(4);
 }
 
 /* 1 */
