@@ -39,10 +39,20 @@ void INCB(CPU* c, MMU* m)
 	}
 	if(!c->reg.B) c->reg.F |= ZERO;
 	c->reg.F &= ~SUBTRACT; /* Reset N flag */
+	CYCLES(4);
 }
 
 void DECB(CPU* c, MMU* m)
 {
+	c->reg.B--;
+	c->reg.F |= SUBTRACT;
+	/* H - Set if no borrow from bit 4, aka no overflow on lower nibble */
+	if((c->reg.B & 0x0F) != 0x0F) // Lower nibble not overflown
+	{
+		c->reg.F |= HALFCARRY;
+	}
+	if(!c->reg.B) c->reg.F |= ZERO;
+	CYCLES(4);
 }
 
 void LDBn(CPU* c, MMU* m)
@@ -53,10 +63,27 @@ void LDBn(CPU* c, MMU* m)
 
 void RLCA(CPU* c, MMU* m)
 {
+	/* Rotate register left */
+	c->reg.F &= ~CARRY; // Reset carry flag
+	if(c->reg.A & 0x80)
+	{
+		c->reg.F |= CARRY; // Contains old bit 7 data
+	}
+	c->reg.A <<= 1;
+	if(c->reg.F & CARRY)
+	{
+		c->reg.A |= 0x01;
+	}
+	CYCLES(4);
 }
 
 void LDnnSP(CPU* c, MMU* m)
 {
+	uint16_t addr;
+	(&addr)[0] = m[c->PC++];
+	(&addr)[1] = m[c->PC++];
+	m[addr]=c->SP;
+	CYCLES(20);
 }
 
 void ADDHLBC(CPU* c, MMU* m)
