@@ -140,11 +140,11 @@ void LDCn(CPU* c, MMU* m)
 
 void RRCA(CPU* c, MMU* m)
 {
-	/* Rotate register left */
+	/* Rotate register right */
 	c->reg.F &= ~CARRY; // Reset carry flag
 	if(c->reg.A & 0x01)
 	{
-		c->reg.F |= CARRY; // Contains old bit 7 data
+		c->reg.F |= CARRY; // Contains old bit 0 data
 	}
 	c->reg.A >>= 1;
 	if(c->reg.F & CARRY)
