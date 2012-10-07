@@ -88,6 +88,15 @@ void LDnnSP(CPU* c, MMU* m)
 
 void ADDHLBC(CPU* c, MMU* m)
 {
+	c->reg.F &= ~SUBTRACT;
+	uint16_t hl = WORD(c->reg.H, c->reg.L);
+	uint16_t result = hl += WORD(c->reg.B, c->reg.C);
+	if(result < hl) c->reg.F |= CARRY;
+	if(c->reg.F & CARRY || (result & 0x0FFF) < (hl & 0x0FFF))
+	{// Carry from bit 11
+		c->reg.F |= HALFCARRY;
+	}
+	CYCLES(8);
 }
 
 void LDABC(CPU* c, MMU* m)
