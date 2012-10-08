@@ -48,6 +48,23 @@ uint8_t ADDrr_rr(CPU* c, uint8_t* ra1, uint8_t* ra2, uint8_t* rb1, uint8_t* rb2)
 	return 8;
 }
 
+uint8_t ADDr_n(CPU* c, uint8_t* reg, uint8_t* reg2)
+{
+	uint8_t tmp=*reg;
+	*reg += *reg2;
+	if(*reg < tmp)
+	{
+		c->reg.F |= CARRY;
+		c->reg.F |= HALFCARRY;
+	}
+	if((*reg & 0x0F) < (tmp & 0x0F))
+	{
+		c->reg.F |= HALFCARRY;
+	}
+	if(!*reg) c->reg.F |= ZERO;
+	return 4;
+}
+
 /* 0 */
 
 void NOP(CPU* c, MMU* m)
@@ -978,6 +995,7 @@ void LDAA(CPU* c, MMU* m)
 
 void ADDAB(CPU* c, MMU* m)
 {
+	CYCLES(ADDr_n(c, &c->reg.A, &c->reg.B));
 }
 
 void ADDAC(CPU* c, MMU* m)
