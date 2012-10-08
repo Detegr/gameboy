@@ -298,7 +298,6 @@ void LDHLnn(CPU* c, MMU* m)
 void LDIHLA(CPU* c, MMU* m)
 {
 	m[WORD(c->reg.H, c->reg.L)]=c->reg.A;
-	/* Return value is omitted so no cycles added */
 	if(++c->reg.L == 0) c->reg.H++;
 	CYCLES(8);
 }
@@ -427,26 +426,37 @@ void DAA(CPU* c, MMU* m)
 
 void JRZn(CPU* c, MMU* m)
 {
+	if((c->reg.F & ZERO)) /* ZERO flag set */
+	{
+		JRn(c,m); /* CYCLES(8) */
+	}
 }
 
 void ADDHLHL(CPU* c, MMU* m)
 {
+	CYCLES(ADDrr_rr(c, &c->reg.H, &c->reg.L, &c->reg.H, &c->reg.L));
 }
 
 void LDIAHL(CPU* c, MMU* m)
 {
+	c->reg.A = m[WORD(c->reg.H, c->reg.L)];
+	if(++c->reg.L == 0) c->reg.H++;
+	CYCLES(8);
 }
 
 void DECHL(CPU* c, MMU* m)
 {
+	if(--c->reg.L == 0xFF) c->reg.H--;
 }
 
 void INCL(CPU* c, MMU* m)
 {
+	CYCLES(inc(&c->reg.L, &c->reg.F));
 }
 
 void DECL(CPU* c, MMU* m)
 {
+	CYCLES(dec(&c->reg.L, &c->reg.F));
 }
 
 void LDLn(CPU* c, MMU* m)
@@ -457,6 +467,10 @@ void LDLn(CPU* c, MMU* m)
 
 void CPL(CPU* c, MMU* m)
 {
+	c->reg.F |= SUBTRACT;
+	c->reg.F |= HALFCARRY;
+	c->reg.A =~ c->reg.A;
+	CYCLES(4);
 }
 
 /* 3 */
