@@ -186,6 +186,7 @@ void RRCA(CPU* c, MMU* m)
 void STOP(CPU* c, MMU* m)
 {
 	c->stop=1;
+	CYCLES(4);
 }
 
 void LDDEnn(CPU* c, MMU* m)
