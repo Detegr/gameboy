@@ -576,6 +576,10 @@ void LDAn(CPU* c, MMU* m)
 
 void CCF(CPU* c, MMU* m)
 {
+	c->reg.F &= ~SUBTRACT;
+	c->reg.F &= ~HALFCARRY;
+	c->reg.F &= ~(c->reg.F & CARRY);
+	CYCLES(4);
 }
 
 /* 4 */
