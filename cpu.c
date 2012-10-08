@@ -477,62 +477,101 @@ void CPL(CPU* c, MMU* m)
 
 void JRNCn(CPU* c, MMU* m)
 {
+	if(!(c->reg.F & CARRY)) /* CARRY flag not set */
+	{
+		JRn(c,m); /* CYCLES(8) */
+	}
 }
 
 void LDSPnn(CPU* c, MMU* m)
 {
+	uint16_t val;
+	(&val)[0] = m[c->PC++];
+	(&val)[1] = m[c->PC++];
+	c->SP = val;
+	CYCLES(12);
 }
 
 void LDDHLA(CPU* c, MMU* m)
 {
+	m[WORD(c->reg.H, c->reg.L)]=c->reg.A;
+	if(--c->reg.L == 0xFF) c->reg.H--;
+	CYCLES(8);
 }
 
 void INCSP(CPU* c, MMU* m)
 {
+	c->SP++;
+	CYCLES(8);
 }
 
 void INCHL2(CPU* c, MMU* m)
 {
+	inc(&m[WORD(c->reg.H, c->reg.L)], &c->reg.F);
+	CYCLES(12);
 }
 
 void DECHL2(CPU* c, MMU* m)
 {
+	dec(&m[WORD(c->reg.H, c->reg.L)], &c->reg.F);
+	CYCLES(12);
 }
 
 void LDHLn(CPU* c, MMU* m)
 {
+	m[WORD(c->reg.H, c->reg.L)] = m[c->PC++];
+	CYCLES(12);
 }
 
 void SCF(CPU* c, MMU* m)
 {
+	c->reg.F &= ~SUBTRACT;
+	c->reg.F &= ~HALFCARRY;
+	c->reg.F |= CARRY;
+	CYCLES(4);
 }
 
 void JRCn(CPU* c, MMU* m)
 {
+	if((c->reg.F & CARRY)) /* CARRY flag set */
+	{
+		JRn(c,m); /* CYCLES(8) */
+	}
 }
 
 void ADDHLSP(CPU* c, MMU* m)
 {
+	/* SP is given stupidly, but should work */
+	CYCLES(ADDrr_rr(c,&c->reg.H, &c->reg.L, (uint8_t*)&c->SP, (uint8_t*)(&c->SP)+1));
 }
 
 void LDDAHL(CPU* c, MMU* m)
 {
+	c->reg.A = m[WORD(c->reg.H, c->reg.L)];
+	if(--c->reg.L == 0xFF) c->reg.H--;
+	CYCLES(8);
 }
 
 void DECSP(CPU* c, MMU* m)
 {
+	c->SP--;
+	CYCLES(8);
 }
 
 void INCA(CPU* c, MMU* m)
 {
+	CYCLES(inc(&c->reg.A, &c->reg.F));
 }
 
 void DECA(CPU* c, MMU* m)
 {
+	CYCLES(dec(&c->reg.A, &c->reg.F));
 }
 
 void LDAn(CPU* c, MMU* m)
 {
+	c->reg.A=m[c->PC++];
+	CYCLES(8);
 }
 
 void CCF(CPU* c, MMU* m)
