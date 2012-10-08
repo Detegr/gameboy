@@ -26,6 +26,44 @@ uint8_t dec(uint8_t* reg, uint8_t* flags)
 	if(!*reg) *flags |= ZERO;
 	return 4;
 }
+uint8_t LDrr_mm(CPU* c, MMU* m, uint8_t* regA, uint8_t* regB)
+{
+	/* Immediate values are in little-endian order, */
+	/* so least significant bits are loaded first. */
+	*regB=m[c->PC++];
+	*regA=m[c->PC++];
+	return 12;
+}
+
+uint8_t ADDrr_rr(CPU* c, uint8_t* ra1, uint8_t* ra2, uint8_t* rb1, uint8_t* rb2)
+{
+	c->reg.F &= ~SUBTRACT;
+	uint16_t a1a2 = WORD(*ra1, *ra2);
+	uint16_t result = a1a2 + WORD(*rb1, *rb2);
+	if(result < a1a2) c->reg.F |= CARRY;
+	if(c->reg.F & CARRY || (result & 0x0FFF) < (a1a2 & 0x0FFF))
+	{// Carry from bit 11
+		c->reg.F |= HALFCARRY;
+	}
+	return 8;
+}
+
+uint8_t ADDr_n(CPU* c, uint8_t* reg, uint8_t* reg2)
+{
+	uint8_t tmp=*reg;
+	*reg += *reg2;
+	if(*reg < tmp)
+	{
+		c->reg.F |= CARRY;
+		c->reg.F |= HALFCARRY;
+	}
+	if((*reg & 0x0F) < (tmp & 0x0F))
+	{
+		c->reg.F |= HALFCARRY;
+	}
+	if(!*reg) c->reg.F |= ZERO;
+	return 4;
+}
 
 /* 0 */
 
@@ -36,11 +74,7 @@ void NOP(CPU* c, MMU* m)
 
 void LDBCnn(CPU* c, MMU* m)
 {
-	/* Immediate values are in little-endian order, */
-	/* so least significant bits are loaded first. */
-	c->reg.C=m[c->PC++];
-	c->reg.B=m[c->PC++];
-	CYCLES(12);
+	CYCLES(LDrr_mm(c, m, &c->reg.B, &c->reg.C));
 }
 
 void LDBCA(CPU* c, MMU* m)
@@ -99,15 +133,7 @@ void LDnnSP(CPU* c, MMU* m)
 
 void ADDHLBC(CPU* c, MMU* m)
 {
-	c->reg.F &= ~SUBTRACT;
-	uint16_t hl = WORD(c->reg.H, c->reg.L);
-	uint16_t result = hl + WORD(c->reg.B, c->reg.C);
-	if(result < hl) c->reg.F |= CARRY;
-	if(c->reg.F & CARRY || (result & 0x0FFF) < (hl & 0x0FFF))
-	{// Carry from bit 11
-		c->reg.F |= HALFCARRY;
-	}
-	CYCLES(8);
+	CYCLES(ADDrr_rr(c, &c->reg.H, &c->reg.L, &c->reg.B, &c->reg.C));
 }
 
 void LDABC(CPU* c, MMU* m)
@@ -159,26 +185,34 @@ void RRCA(CPU* c, MMU* m)
 
 void STOP(CPU* c, MMU* m)
 {
+	c->stop=1;
 }
 
 void LDDEnn(CPU* c, MMU* m)
 {
+	CYCLES(LDrr_mm(c, m, &c->reg.D, &c->reg.E));
 }
 
 void LDDEA(CPU* c, MMU* m)
 {
+	m[WORD(c->reg.D, c->reg.E)]=c->reg.A;
+	CYCLES(8);
 }
 
 void INCDE(CPU* c, MMU* m)
 {
+	if(++c->reg.E == 0) c->reg.D++;
+	CYCLES(8);
 }
 
 void INCD(CPU* c, MMU* m)
 {
+	CYCLES(inc(&c->reg.D, &c->reg.F));
 }
 
 void DECD(CPU* c, MMU* m)
 {
+	CYCLES(dec(&c->reg.D, &c->reg.F));
 }
 
 void LDDn(CPU* c, MMU* m)
@@ -189,30 +223,54 @@ void LDDn(CPU* c, MMU* m)
 
 void RLA(CPU* c, MMU* m)
 {
+	/* Rotate register left through carry flag */
+	uint8_t old_carry = c->reg.F & CARRY;
+	c->reg.F &= ~CARRY; // Reset carry flag
+	if(c->reg.A & 0x80)
+	{
+		c->reg.F |= CARRY; // Contains old bit 7 data
+	}
+	c->reg.A <<= 1;
+	if(old_carry)
+	{
+		c->reg.A |= 0x01;
+	}
+	if(!c->reg.A) c->reg.F |= ZERO;
+	CYCLES(4);
 }
 
 void JRn(CPU* c, MMU* m)
 {
+	int8_t n=m[c->PC++];
+	c->PC+=n;
+	CYCLES(8);
 }
 
 void ADDHLDE(CPU* c, MMU* m)
 {
+	CYCLES(ADDrr_rr(c, &c->reg.H, &c->reg.L, &c->reg.D, &c->reg.E));
 }
 
 void LDADE(CPU* c, MMU* m)
 {
+	c->reg.A = m[WORD(c->reg.D, c->reg.E)];
+	CYCLES(8);
 }
 
 void DECDE(CPU* c, MMU* m)
 {
+	if(--c->reg.E == 0xFF) c->reg.D--;
+	CYCLES(8);
 }
 
 void INCE(CPU* c, MMU* m)
 {
+	CYCLES(inc(&c->reg.E, &c->reg.F));
 }
 
 void DECE(CPU* c, MMU* m)
 {
+	CYCLES(dec(&c->reg.E, &c->reg.F));
 }
 
 void LDEn(CPU* c, MMU* m)
@@ -223,32 +281,58 @@ void LDEn(CPU* c, MMU* m)
 
 void RRA(CPU* c, MMU* m)
 {
+	/* Rotate register right through carry flag */
+	uint8_t old_carry = c->reg.F & CARRY;
+	c->reg.F &= ~CARRY; // Reset carry flag
+	if(c->reg.A & 0x01)
+	{
+		c->reg.F |= CARRY; // Contains old bit 0 data
+	}
+	c->reg.A >>= 1;
+	if(old_carry)
+	{
+		c->reg.A |= 0x80;
+	}
+	if(!c->reg.A) c->reg.F |= ZERO;
+	CYCLES(4);
 }
 
 /* 2 */
 
 void JRNZn(CPU* c, MMU* m)
 {
+	if(!(c->reg.F & ZERO)) /* ZERO flag not set */
+	{
+		JRn(c,m); /* CYCLES(8) */
+	}
 }
 
 void LDHLnn(CPU* c, MMU* m)
 {
+	CYCLES(LDrr_mm(c, m, &c->reg.H, &c->reg.L));
 }
 
 void LDIHLA(CPU* c, MMU* m)
 {
+	m[WORD(c->reg.H, c->reg.L)]=c->reg.A;
+	if(++c->reg.L == 0) c->reg.H++;
+	CYCLES(8);
 }
 
 void INCHL(CPU* c, MMU* m)
 {
+	if(++c->reg.L == 0) c->reg.H++;
+	CYCLES(8);
 }
 
 void INCH(CPU* c, MMU* m)
 {
+	CYCLES(inc(&c->reg.H, &c->reg.F));
 }
 
 void DECH(CPU* c, MMU* m)
 {
+	CYCLES(dec(&c->reg.H, &c->reg.F));
 }
 
 void LDHn(CPU* c, MMU* m)
@@ -259,30 +343,137 @@ void LDHn(CPU* c, MMU* m)
 
 void DAA(CPU* c, MMU* m)
 {
+	uint8_t h=c->reg.A >> 4;
+	uint8_t l=c->reg.A & 0x0F;
+	uint8_t addition=0x0;
+	uint8_t result=0x0;
+	if(c->reg.F & SUBTRACT)
+	{// Last instruction was subtraction
+		if(c->reg.F & CARRY)
+		{
+			if(c->reg.F & HALFCARRY)
+			{
+				if(h >= 0x06 && l >= 0x06)
+				{
+					addition=0x9A;
+				}
+			}
+			else
+			{
+				if(h >= 0x07 && l <= 0x09)
+				{
+					addition=0xA0;
+				}
+			}
+		}
+		else
+		{
+			if(c->reg.F & HALFCARRY)
+			{
+				if(h <= 0x08 && l >= 0x06)
+				{
+					addition=0xFA;
+				}
+			}
+		}
+	}
+	else
+	{// Last instruction was addition
+		if(c->reg.F & CARRY)
+		{
+			if(c->reg.F & HALFCARRY)
+			{
+				if(h <= 0x3 && l<= 0x3)
+				{
+					addition=0x66;
+				}
+			}
+			else
+			{
+				if(h <= 0x02)
+				{
+					if(l <= 0x09)
+					{
+						addition=0x60;
+					}
+					else
+					{
+						addition=0x66;
+					}
+				}
+			}
+		}
+		else
+		{
+			if(c->reg.F & HALFCARRY && l<= 0x03)
+			{
+				if(h <= 0x09) addition=0x06;
+				else if(h >= 0xA)
+				{
+					addition=0x66;
+					c->reg.F |= CARRY;
+				}
+			}
+			else
+			{
+				if(h <= 0x08 && l >= 0x0A)
+				{
+					addition=0x06;
+				}
+				else if(h >= 0x0A && l <= 0x09)
+				{
+					addition=0x60;
+					c->reg.F |= CARRY;
+				}
+				else if(h >= 0x09 && l >= 0x0A)
+				{
+					addition=0x66;
+					c->reg.F |= CARRY;
+				}
+			}
+		}
+	}
+	c->reg.F &= ~HALFCARRY;
+	result = ((h << 4)|l)+addition;
+	c->reg.A=result;
+	if(!c->reg.A) c->reg.F |= ZERO;
+
+	CYCLES(4);
 }
 
 void JRZn(CPU* c, MMU* m)
 {
+	if((c->reg.F & ZERO)) /* ZERO flag set */
+	{
+		JRn(c,m); /* CYCLES(8) */
+	}
 }
 
 void ADDHLHL(CPU* c, MMU* m)
 {
+	CYCLES(ADDrr_rr(c, &c->reg.H, &c->reg.L, &c->reg.H, &c->reg.L));
 }
 
 void LDIAHL(CPU* c, MMU* m)
 {
+	c->reg.A = m[WORD(c->reg.H, c->reg.L)];
+	if(++c->reg.L == 0) c->reg.H++;
+	CYCLES(8);
 }
 
 void DECHL(CPU* c, MMU* m)
 {
+	if(--c->reg.L == 0xFF) c->reg.H--;
 }
 
 void INCL(CPU* c, MMU* m)
 {
+	CYCLES(inc(&c->reg.L, &c->reg.F));
 }
 
 void DECL(CPU* c, MMU* m)
 {
+	CYCLES(dec(&c->reg.L, &c->reg.F));
 }
 
 void LDLn(CPU* c, MMU* m)
@@ -293,72 +484,119 @@ void LDLn(CPU* c, MMU* m)
 
 void CPL(CPU* c, MMU* m)
 {
+	c->reg.F |= SUBTRACT;
+	c->reg.F |= HALFCARRY;
+	c->reg.A =~ c->reg.A;
+	CYCLES(4);
 }
 
 /* 3 */
 
 void JRNCn(CPU* c, MMU* m)
 {
+	if(!(c->reg.F & CARRY)) /* CARRY flag not set */
+	{
+		JRn(c,m); /* CYCLES(8) */
+	}
 }
 
 void LDSPnn(CPU* c, MMU* m)
 {
+	uint16_t val;
+	(&val)[0] = m[c->PC++];
+	(&val)[1] = m[c->PC++];
+	c->SP = val;
+	CYCLES(12);
 }
 
 void LDDHLA(CPU* c, MMU* m)
 {
+	m[WORD(c->reg.H, c->reg.L)]=c->reg.A;
+	if(--c->reg.L == 0xFF) c->reg.H--;
+	CYCLES(8);
 }
 
 void INCSP(CPU* c, MMU* m)
 {
+	c->SP++;
+	CYCLES(8);
 }
 
 void INCHL2(CPU* c, MMU* m)
 {
+	inc(&m[WORD(c->reg.H, c->reg.L)], &c->reg.F);
+	CYCLES(12);
 }
 
 void DECHL2(CPU* c, MMU* m)
 {
+	dec(&m[WORD(c->reg.H, c->reg.L)], &c->reg.F);
+	CYCLES(12);
 }
 
 void LDHLn(CPU* c, MMU* m)
 {
+	m[WORD(c->reg.H, c->reg.L)] = m[c->PC++];
+	CYCLES(12);
 }
 
 void SCF(CPU* c, MMU* m)
 {
+	c->reg.F &= ~SUBTRACT;
+	c->reg.F &= ~HALFCARRY;
+	c->reg.F |= CARRY;
+	CYCLES(4);
 }
 
 void JRCn(CPU* c, MMU* m)
 {
+	if((c->reg.F & CARRY)) /* CARRY flag set */
+	{
+		JRn(c,m); /* CYCLES(8) */
+	}
 }
 
 void ADDHLSP(CPU* c, MMU* m)
 {
+	/* SP is given stupidly, but should work */
+	CYCLES(ADDrr_rr(c,&c->reg.H, &c->reg.L, (uint8_t*)&c->SP, (uint8_t*)(&c->SP)+1));
 }
 
 void LDDAHL(CPU* c, MMU* m)
 {
+	c->reg.A = m[WORD(c->reg.H, c->reg.L)];
+	if(--c->reg.L == 0xFF) c->reg.H--;
+	CYCLES(8);
 }
 
 void DECSP(CPU* c, MMU* m)
 {
+	c->SP--;
+	CYCLES(8);
 }
 
 void INCA(CPU* c, MMU* m)
 {
+	CYCLES(inc(&c->reg.A, &c->reg.F));
 }
 
 void DECA(CPU* c, MMU* m)
 {
+	CYCLES(dec(&c->reg.A, &c->reg.F));
 }
 
 void LDAn(CPU* c, MMU* m)
 {
+	c->reg.A=m[c->PC++];
+	CYCLES(8);
 }
 
 void CCF(CPU* c, MMU* m)
 {
+	c->reg.F &= ~SUBTRACT;
+	c->reg.F &= ~HALFCARRY;
+	c->reg.F &= ~(c->reg.F & CARRY);
+	CYCLES(4);
 }
 
 /* 4 */
@@ -757,6 +995,7 @@ void LDAA(CPU* c, MMU* m)
 
 void ADDAB(CPU* c, MMU* m)
 {
+	CYCLES(ADDr_n(c, &c->reg.A, &c->reg.B));
 }
 
 void ADDAC(CPU* c, MMU* m)
