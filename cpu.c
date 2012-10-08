@@ -330,6 +330,7 @@ void DAA(CPU* c, MMU* m)
 	uint8_t h=c->reg.A >> 4;
 	uint8_t l=c->reg.A & 0x0F;
 	uint8_t addition=0x0;
+	uint8_t result=0x0;
 	if(c->reg.F & SUBTRACT)
 	{// Last instruction was subtraction
 		if(c->reg.F & CARRY)
@@ -417,8 +418,11 @@ void DAA(CPU* c, MMU* m)
 		}
 	}
 	c->reg.F &= ~HALFCARRY;
-	c->reg.A = WORD(h,l);
+	result = ((h << 4)|l)+addition;
+	c->reg.A=result;
 	if(!c->reg.A) c->reg.F |= ZERO;
+
+	CYCLES(4);
 }
 
 void JRZn(CPU* c, MMU* m)
