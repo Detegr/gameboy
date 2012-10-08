@@ -72,7 +72,7 @@ uint8_t ADCr_r(CPU* c, uint8_t* reg, uint8_t* reg2)
 {
 	uint8_t val=*reg2;
 	if(c->reg.F & CARRY) val++;
-	ADDr_r(c, reg, &reg2);
+	ADDr_r(c, reg, &val);
 	return 4;
 }
 
