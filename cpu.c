@@ -40,26 +40,57 @@ uint8_t ADDrr_rr(CPU* c, uint8_t* ra1, uint8_t* ra2, uint8_t* rb1, uint8_t* rb2)
 	c->reg.F &= ~SUBTRACT;
 	uint16_t a1a2 = WORD(*ra1, *ra2);
 	uint16_t result = a1a2 + WORD(*rb1, *rb2);
-	if(result < a1a2) c->reg.F |= CARRY;
-	if(c->reg.F & CARRY || (result & 0x0FFF) < (a1a2 & 0x0FFF))
+	if(result < a1a2) c->reg.F |= CARRY|HALFCARRY;
+	else if((result & 0xF000) != (a1a2 & 0xF000))
 	{// Carry from bit 11
 		c->reg.F |= HALFCARRY;
 	}
 	return 8;
 }
 
-uint8_t ADDr_n(CPU* c, uint8_t* reg, uint8_t* reg2)
+uint8_t ADDr_r(CPU* c, uint8_t* reg, uint8_t* reg2)
 {
 	uint8_t tmp=*reg;
-	*reg += *reg2;
-	if(*reg < tmp)
+	if(*reg2)
 	{
-		c->reg.F |= CARRY;
-		c->reg.F |= HALFCARRY;
+		*reg += *reg2;
+		if(*reg <= tmp)
+		{
+			c->reg.F |= CARRY;
+			c->reg.F |= HALFCARRY;
+		}
+		else if(*reg & 0xF0 != tmp & 0xF0)
+		{
+			c->reg.F |= HALFCARRY;
+		}
 	}
-	if((*reg & 0x0F) < (tmp & 0x0F))
+	if(!*reg) c->reg.F |= ZERO;
+	return 4;
+}
+
+uint8_t ADCr_r(CPU* c, uint8_t* reg, uint8_t* reg2)
+{
+	uint8_t val=*reg2;
+	if(c->reg.F & CARRY) val++;
+	ADDr_r(c, reg, &reg2);
+	return 4;
+}
+
+uint8_t SUBr_r(CPU* c, uint8_t* reg, uint8_t* reg2)
+{
+	uint8_t tmp=*reg;
+	*reg -= *reg2;
+	if(*reg2)
 	{
-		c->reg.F |= HALFCARRY;
+		if(*reg >= tmp)
+		{
+			c->reg.F |= CARRY;
+			c->reg.F |= HALFCARRY;
+		}
+		else if(*reg & 0xF0 != tmp & 0xF0)
+		{
+			c->reg.F |= HALFCARRY;
+		}
 	}
 	if(!*reg) c->reg.F |= ZERO;
 	return 4;
@@ -996,67 +1027,84 @@ void LDAA(CPU* c, MMU* m)
 
 void ADDAB(CPU* c, MMU* m)
 {
-	CYCLES(ADDr_n(c, &c->reg.A, &c->reg.B));
+	CYCLES(ADDr_r(c, &c->reg.A, &c->reg.B));
 }
 
 void ADDAC(CPU* c, MMU* m)
 {
+	CYCLES(ADDr_r(c, &c->reg.A, &c->reg.C));
 }
 
 void ADDAD(CPU* c, MMU* m)
 {
+	CYCLES(ADDr_r(c, &c->reg.A, &c->reg.D));
 }
 
 void ADDAE(CPU* c, MMU* m)
 {
+	CYCLES(ADDr_r(c, &c->reg.A, &c->reg.E));
 }
 
 void ADDAH(CPU* c, MMU* m)
 {
+	CYCLES(ADDr_r(c, &c->reg.A, &c->reg.H));
 }
 
 void ADDAL(CPU* c, MMU* m)
 {
+	CYCLES(ADDr_r(c, &c->reg.A, &c->reg.L));
 }
 
 void ADDAHL(CPU* c, MMU* m)
 {
+	ADDr_r(c, &c->reg.A, &m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(8);
 }
 
 void ADDAA(CPU* c, MMU* m)
 {
+	CYCLES(ADDr_r(c, &c->reg.A, &c->reg.A));
 }
 
 void ADCAB(CPU* c, MMU* m)
 {
+	CYCLES(ADCr_r(c, &c->reg.A, &c->reg.B));
 }
 
 void ADCAC(CPU* c, MMU* m)
 {
+	CYCLES(ADCr_r(c, &c->reg.A, &c->reg.C));
 }
 
 void ADCAD(CPU* c, MMU* m)
 {
+	CYCLES(ADCr_r(c, &c->reg.A, &c->reg.D));
 }
 
 void ADCAE(CPU* c, MMU* m)
 {
+	CYCLES(ADCr_r(c, &c->reg.A, &c->reg.E));
 }
 
 void ADCAH(CPU* c, MMU* m)
 {
+	CYCLES(ADCr_r(c, &c->reg.A, &c->reg.H));
 }
 
 void ADCAL(CPU* c, MMU* m)
 {
+	CYCLES(ADCr_r(c, &c->reg.A, &c->reg.L));
 }
 
 void ADCAHL(CPU* c, MMU* m)
 {
+	ADCr_r(c, &c->reg.A, &m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(8);
 }
 
 void ADCAA(CPU* c, MMU* m)
 {
+	CYCLES(ADCr_r(c, &c->reg.A, &c->reg.A));
 }
 
 /* 9 */
