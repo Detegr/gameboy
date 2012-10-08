@@ -26,6 +26,27 @@ uint8_t dec(uint8_t* reg, uint8_t* flags)
 	if(!*reg) *flags |= ZERO;
 	return 4;
 }
+uint8_t LDrr_mm(CPU* c, MMU* m, uint8_t* regA, uint8_t* regB)
+{
+	/* Immediate values are in little-endian order, */
+	/* so least significant bits are loaded first. */
+	*regB=m[c->PC++];
+	*regA=m[c->PC++];
+	return 12;
+}
+
+uint8_t ADDrr_rr(CPU* c, uint8_t* ra1, uint8_t* ra2, uint8_t* rb1, uint8_t* rb2)
+{
+	c->reg.F &= ~SUBTRACT;
+	uint16_t a1a2 = WORD(*ra1, *ra2);
+	uint16_t result = a1a2 + WORD(*rb1, *rb2);
+	if(result < a1a2) c->reg.F |= CARRY;
+	if(c->reg.F & CARRY || (result & 0x0FFF) < (a1a2 & 0x0FFF))
+	{// Carry from bit 11
+		c->reg.F |= HALFCARRY;
+	}
+	return 8;
+}
 
 /* 0 */
 
@@ -36,11 +57,7 @@ void NOP(CPU* c, MMU* m)
 
 void LDBCnn(CPU* c, MMU* m)
 {
-	/* Immediate values are in little-endian order, */
-	/* so least significant bits are loaded first. */
-	c->reg.C=m[c->PC++];
-	c->reg.B=m[c->PC++];
-	CYCLES(12);
+	CYCLES(LDrr_mm(c, m, &c->reg.B, &c->reg.C));
 }
 
 void LDBCA(CPU* c, MMU* m)
@@ -99,15 +116,7 @@ void LDnnSP(CPU* c, MMU* m)
 
 void ADDHLBC(CPU* c, MMU* m)
 {
-	c->reg.F &= ~SUBTRACT;
-	uint16_t hl = WORD(c->reg.H, c->reg.L);
-	uint16_t result = hl + WORD(c->reg.B, c->reg.C);
-	if(result < hl) c->reg.F |= CARRY;
-	if(c->reg.F & CARRY || (result & 0x0FFF) < (hl & 0x0FFF))
-	{// Carry from bit 11
-		c->reg.F |= HALFCARRY;
-	}
-	CYCLES(8);
+	CYCLES(ADDrr_rr(c, &c->reg.H, &c->reg.L, &c->reg.B, &c->reg.C));
 }
 
 void LDABC(CPU* c, MMU* m)
@@ -159,26 +168,34 @@ void RRCA(CPU* c, MMU* m)
 
 void STOP(CPU* c, MMU* m)
 {
+	c->stop=1;
 }
 
 void LDDEnn(CPU* c, MMU* m)
 {
+	CYCLES(LDrr_mm(c, m, &c->reg.D, &c->reg.E));
 }
 
 void LDDEA(CPU* c, MMU* m)
 {
+	m[WORD(c->reg.D, c->reg.E)]=c->reg.A;
+	CYCLES(8);
 }
 
 void INCDE(CPU* c, MMU* m)
 {
+	if(++c->reg.E == 0) c->reg.D++;
+	CYCLES(8);
 }
 
 void INCD(CPU* c, MMU* m)
 {
+	CYCLES(inc(&c->reg.D, &c->reg.F));
 }
 
 void DECD(CPU* c, MMU* m)
 {
+	CYCLES(dec(&c->reg.D, &c->reg.F));
 }
 
 void LDDn(CPU* c, MMU* m)
@@ -189,30 +206,54 @@ void LDDn(CPU* c, MMU* m)
 
 void RLA(CPU* c, MMU* m)
 {
+	/* Rotate register left through carry flag */
+	uint8_t old_carry = c->reg.F & CARRY;
+	c->reg.F &= ~CARRY; // Reset carry flag
+	if(c->reg.A & 0x80)
+	{
+		c->reg.F |= CARRY; // Contains old bit 7 data
+	}
+	c->reg.A <<= 1;
+	if(old_carry)
+	{
+		c->reg.A |= 0x01;
+	}
+	if(!c->reg.A) c->reg.F |= ZERO;
+	CYCLES(4);
 }
 
 void JRn(CPU* c, MMU* m)
 {
+	int8_t n=m[c->PC++];
+	c->PC+=n;
+	CYCLES(8);
 }
 
 void ADDHLDE(CPU* c, MMU* m)
 {
+	CYCLES(ADDrr_rr(c, &c->reg.H, &c->reg.L, &c->reg.D, &c->reg.E));
 }
 
 void LDADE(CPU* c, MMU* m)
 {
+	c->reg.A = m[WORD(c->reg.D, c->reg.E)];
+	CYCLES(8);
 }
 
 void DECDE(CPU* c, MMU* m)
 {
+	if(--c->reg.E == 0xFF) c->reg.D--;
+	CYCLES(8);
 }
 
 void INCE(CPU* c, MMU* m)
 {
+	CYCLES(inc(&c->reg.E, &c->reg.F));
 }
 
 void DECE(CPU* c, MMU* m)
 {
+	CYCLES(dec(&c->reg.E, &c->reg.F));
 }
 
 void LDEn(CPU* c, MMU* m)
@@ -223,32 +264,59 @@ void LDEn(CPU* c, MMU* m)
 
 void RRA(CPU* c, MMU* m)
 {
+	/* Rotate register right through carry flag */
+	uint8_t old_carry = c->reg.F & CARRY;
+	c->reg.F &= ~CARRY; // Reset carry flag
+	if(c->reg.A & 0x01)
+	{
+		c->reg.F |= CARRY; // Contains old bit 0 data
+	}
+	c->reg.A >>= 1;
+	if(old_carry)
+	{
+		c->reg.A |= 0x80;
+	}
+	if(!c->reg.A) c->reg.F |= ZERO;
+	CYCLES(4);
 }
 
 /* 2 */
 
 void JRNZn(CPU* c, MMU* m)
 {
+	if(!(c->reg.F & ZERO)) /* ZERO flag not set */
+	{
+		JRn(c,m); /* CYCLES(8) */
+	}
 }
 
 void LDHLnn(CPU* c, MMU* m)
 {
+	CYCLES(LDrr_mm(c, m, &c->reg.H, &c->reg.L));
 }
 
 void LDIHLA(CPU* c, MMU* m)
 {
+	m[WORD(c->reg.H, c->reg.L)]=c->reg.A;
+	/* Return value is omitted so no cycles added */
+	if(++c->reg.L == 0) c->reg.H++;
+	CYCLES(8);
 }
 
 void INCHL(CPU* c, MMU* m)
 {
+	if(++c->reg.L == 0) c->reg.H++;
+	CYCLES(8);
 }
 
 void INCH(CPU* c, MMU* m)
 {
+	CYCLES(inc(&c->reg.H, &c->reg.F));
 }
 
 void DECH(CPU* c, MMU* m)
 {
+	CYCLES(dec(&c->reg.H, &c->reg.F));
 }
 
 void LDHn(CPU* c, MMU* m)
