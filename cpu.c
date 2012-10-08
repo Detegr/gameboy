@@ -327,6 +327,98 @@ void LDHn(CPU* c, MMU* m)
 
 void DAA(CPU* c, MMU* m)
 {
+	uint8_t h=c->reg.A >> 4;
+	uint8_t l=c->reg.A & 0x0F;
+	uint8_t addition=0x0;
+	if(c->reg.F & SUBTRACT)
+	{// Last instruction was subtraction
+		if(c->reg.F & CARRY)
+		{
+			if(c->reg.F & HALFCARRY)
+			{
+				if(h >= 0x06 && l >= 0x06)
+				{
+					addition=0x9A;
+				}
+			}
+			else
+			{
+				if(h >= 0x07 && l <= 0x09)
+				{
+					addition=0xA0;
+				}
+			}
+		}
+		else
+		{
+			if(c->reg.F & HALFCARRY)
+			{
+				if(h <= 0x08 && l >= 0x06)
+				{
+					addition=0xFA;
+				}
+			}
+		}
+	}
+	else
+	{// Last instruction was addition
+		if(c->reg.F & CARRY)
+		{
+			if(c->reg.F & HALFCARRY)
+			{
+				if(h <= 0x3 && l<= 0x3)
+				{
+					addition=0x66;
+				}
+			}
+			else
+			{
+				if(h <= 0x02)
+				{
+					if(l <= 0x09)
+					{
+						addition=0x60;
+					}
+					else
+					{
+						addition=0x66;
+					}
+				}
+			}
+		}
+		else
+		{
+			if(c->reg.F & HALFCARRY && l<= 0x03)
+			{
+				if(h <= 0x09) addition=0x06;
+				else if(h >= 0xA)
+				{
+					addition=0x66;
+					c->reg.F |= CARRY;
+				}
+			}
+			else
+			{
+				if(h <= 0x08 && l >= 0x0A)
+				{
+					addition=0x06;
+				}
+				else if(h >= 0x0A && l <= 0x09)
+				{
+					addition=0x60;
+					c->reg.F |= CARRY;
+				}
+				else if(h >= 0x09 && l >= 0x0A)
+				{
+					addition=0x66;
+					c->reg.F |= CARRY;
+				}
+			}
+		}
+	}
+	c->reg.F &= ~HALFCARRY;
+	c->reg.A = WORD(h,l);
+	if(!c->reg.A) c->reg.F |= ZERO;
 }
 
 void JRZn(CPU* c, MMU* m)
