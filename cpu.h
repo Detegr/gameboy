@@ -28,6 +28,8 @@ typedef struct Z80CPU
 	uint16_t SP; /* Stack Pointer */
 	uint16_t PC; /* Program Counter, set to 0x100 on power up */
 
+	uint8_t ime; /* Interrupt master enable */
+
 	uint8_t halt; /* Is the CPU halted? */
 	uint8_t stop; /* Is the CPU stopped? */
 	unsigned int c; /* Total time in clock cycles (*4 of machine cycles) */

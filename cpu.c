@@ -1448,7 +1448,7 @@ void CPA(CPU* c, MMU* m)
 
 void RETNZ(CPU* c, MMU* m)
 {
-	if(!(c->reg.F & ZERO)) CYCLES(RET(c,m));
+	if(!(c->reg.F & ZERO)) RET(c,m);
 	else CYCLES(8);
 }
 
@@ -1482,7 +1482,7 @@ void RST0(CPU* c, MMU* m)
 
 void RETZ(CPU* c, MMU* m)
 {
-	if(c->reg.F & ZERO) CYCLES(RET(c,m));
+	if(c->reg.F & ZERO) RET(c,m);
 	else CYCLES(8);
 }
 
@@ -1521,7 +1521,7 @@ void RST8(CPU* c, MMU* m)
 
 void RETNC(CPU* c, MMU* m)
 {
-	if(!(c->reg.F & CARRY)) CYCLES(RET(c,m));
+	if(!(c->reg.F & CARRY)) RET(c,m);
 	else CYCLES(8);
 }
 
@@ -1551,12 +1551,14 @@ void RST10(CPU* c, MMU* m)
 
 void RETC(CPU* c, MMU* m)
 {
-	if(c->reg.F & CARRY) CYCLES(RET(c,m));
+	if(c->reg.F & CARRY) RET(c,m);
 	else CYCLES(8);
 }
 
 void RETI(CPU* c, MMU* m)
 {
+	RET(c,m);
+	// TODO: Enable interrupts
 }
 
 void JPCnn(CPU* c, MMU* m)
