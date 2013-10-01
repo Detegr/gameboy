@@ -3,10 +3,10 @@
 
 #include <stdint.h>
 
-#define ZERO		0x80 /* Last math operation is zero or two values match when using CP */
-#define SUBTRACT	0x40 /* Subtraction was performed in the last math instruction */
-#define HALFCARRY	0x20 /* Carry occurred from the lower nibble in the last math operation */
-#define CARRY		0x10 /* Carry occurred from the last math operation or if A is smaller value when executing CP */
+#define ZERO		0x80 /* Z - Last math operation is zero or two values match when using CP */
+#define SUBTRACT	0x40 /* N - Subtraction was performed in the last math instruction */
+#define HALFCARRY	0x20 /* H - Carry occurred from the lower nibble in the last math operation */
+#define CARRY		0x10 /* C - Carry occurred from the last math operation or if A is smaller value when executing CP */
 
 typedef uint8_t MMU;
 typedef struct Z80_8BitRegisters

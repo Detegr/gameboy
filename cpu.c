@@ -1,6 +1,18 @@
 #include "cpu.h"
 #define CYCLES(X) (c->c+=X)
 #define WORD(X,Y) ((X<<8)|Y)
+#define SET_N(val) (val |= SUBTRACT)
+#define RESET_N(val) (val &= ~SUBTRACT)
+#define SET_Z(val) (val |= ZERO)
+#define RESET_Z(val) (val &= ~ZERO)
+#define SET_C(val) (val |= CARRY)
+#define RESET_C(val) (val &= ~CARRY)
+#define SET_H(val) (val |= HALFCARRY)
+#define RESET_H(val) (val &= ~HALFCARRY)
+
+#define CHECK_CARRY_ADD(v,tmp) (v <= tmp)
+#define CHECK_CARRY_SUB(v,tmp) (v >= tmp)
+#define CHECK_HALFCARRY(v, tmp) ((v & 0xF0) != (tmp & 0xF0))
 
 uint8_t inc(uint8_t* reg, uint8_t* flags)
 {
@@ -59,12 +71,13 @@ uint8_t ADDr_r(CPU* c, uint8_t* reg, uint8_t* reg2)
 			c->reg.F |= CARRY;
 			c->reg.F |= HALFCARRY;
 		}
-		else if(*reg & 0xF0 != tmp & 0xF0)
+		else if((*reg & 0xF0) != (tmp & 0xF0))
 		{
 			c->reg.F |= HALFCARRY;
 		}
 	}
 	if(!*reg) c->reg.F |= ZERO;
+	c->reg.F &= ~SUBTRACT;
 	return 4;
 }
 
@@ -87,12 +100,13 @@ uint8_t SUBr_r(CPU* c, uint8_t* reg, uint8_t* reg2)
 			c->reg.F |= CARRY;
 			c->reg.F |= HALFCARRY;
 		}
-		else if(*reg & 0xF0 != tmp & 0xF0)
+		else if((*reg & 0xF0) != (tmp & 0xF0))
 		{
 			c->reg.F |= HALFCARRY;
 		}
 	}
 	if(!*reg) c->reg.F |= ZERO;
+	c->reg.F |= SUBTRACT;
 	return 4;
 }
 
@@ -1111,198 +1125,323 @@ void ADCAA(CPU* c, MMU* m)
 
 void SUBAB(CPU* c, MMU* m)
 {
+	CYCLES(SUBr_r(c, &c->reg.A, &c->reg.B));
 }
 
 void SUBAC(CPU* c, MMU* m)
 {
+	CYCLES(SUBr_r(c, &c->reg.A, &c->reg.C));
 }
 
 void SUBAD(CPU* c, MMU* m)
 {
+	CYCLES(SUBr_r(c, &c->reg.A, &c->reg.D));
 }
 
 void SUBAE(CPU* c, MMU* m)
 {
+	CYCLES(SUBr_r(c, &c->reg.A, &c->reg.E));
 }
 
 void SUBAH(CPU* c, MMU* m)
 {
+	CYCLES(SUBr_r(c, &c->reg.A, &c->reg.H));
 }
 
 void SUBAL(CPU* c, MMU* m)
 {
+	CYCLES(SUBr_r(c, &c->reg.A, &c->reg.L));
 }
 
 void SUBAHL(CPU* c, MMU* m)
 {
+	SUBr_r(c, &c->reg.A, &m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(8);
 }
 
 void SUBAA(CPU* c, MMU* m)
 {
+	CYCLES(SUBr_r(c, &c->reg.A, &c->reg.A));
+}
+
+uint8_t SBCr_r(CPU* c, uint8_t* reg1, uint8_t* reg2)
+{// Subtract n + carry flag from A
+	SET_N(c->reg.F);
+	if(*reg2)
+	{
+		uint8_t tmp=*reg1;
+		*reg1 -= *reg2;
+		if(CHECK_CARRY_SUB(*reg1, tmp))
+		{
+			SET_H(c->reg.F);
+			SET_C(c->reg.F);
+		}
+		else if(CHECK_HALFCARRY(*reg1, tmp))
+		{
+			SET_H(c->reg.F);
+		}
+	}
+	if(*reg1 == 0x0) SET_Z(c->reg.F);
+	return 4;
 }
 
 void SBCAB(CPU* c, MMU* m)
 {
+	CYCLES(SBCr_r(c, &c->reg.A, &c->reg.B));
 }
 
 void SBCAC(CPU* c, MMU* m)
 {
+	CYCLES(SBCr_r(c, &c->reg.A, &c->reg.C));
 }
 
 void SBCAD(CPU* c, MMU* m)
 {
+	CYCLES(SBCr_r(c, &c->reg.A, &c->reg.D));
 }
 
 void SBCAE(CPU* c, MMU* m)
 {
+	CYCLES(SBCr_r(c, &c->reg.A, &c->reg.E));
 }
 
 void SBCAH(CPU* c, MMU* m)
 {
+	CYCLES(SBCr_r(c, &c->reg.A, &c->reg.H));
 }
 
 void SBCAL(CPU* c, MMU* m)
 {
+	CYCLES(SBCr_r(c, &c->reg.A, &c->reg.L));
 }
 
 void SBCAHL(CPU* c, MMU* m)
 {
+	SBCr_r(c, &c->reg.A, &m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(8);
 }
 
 void SBCAA(CPU* c, MMU* m)
 {
+	CYCLES(SBCr_r(c, &c->reg.A, &c->reg.A));
 }
 
 /* A */
 
+int ANDr_r(CPU* c, uint8_t* reg1, uint8_t* reg2)
+{
+	RESET_N(c->reg.F);
+	SET_H(c->reg.F);
+	RESET_C(c->reg.F);
+
+	*reg1 = *reg1 & *reg2;
+
+	if(*reg1 == 0x0) SET_Z(c->reg.F);
+
+	return 4;
+}
+
 void ANDB(CPU* c, MMU* m)
 {
+	CYCLES(ANDr_r(c, &c->reg.A, &c->reg.B));
 }
 
 void ANDC(CPU* c, MMU* m)
 {
+	CYCLES(ANDr_r(c, &c->reg.A, &c->reg.C));
 }
 
 void ANDD(CPU* c, MMU* m)
 {
+	CYCLES(ANDr_r(c, &c->reg.A, &c->reg.D));
 }
 
 void ANDE(CPU* c, MMU* m)
 {
+	CYCLES(ANDr_r(c, &c->reg.A, &c->reg.E));
 }
 
 void ANDH(CPU* c, MMU* m)
 {
+	CYCLES(ANDr_r(c, &c->reg.A, &c->reg.H));
 }
 
 void ANDL(CPU* c, MMU* m)
 {
+	CYCLES(ANDr_r(c, &c->reg.A, &c->reg.L));
 }
 
 void ANDHL(CPU* c, MMU* m)
 {
+	ANDr_r(c, &c->reg.A, &m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(8);
 }
 
 void ANDA(CPU* c, MMU* m)
 {
+	CYCLES(ANDr_r(c, &c->reg.A, &c->reg.A));
+}
+
+int XORr_r(CPU* c, uint8_t* reg1, uint8_t* reg2)
+{
+	RESET_N(c->reg.F);
+	RESET_H(c->reg.F);
+	RESET_C(c->reg.F);
+
+	*reg1 = *reg1 ^ *reg2;
+
+	if(*reg1 == 0x0) SET_Z(c->reg.F);
+
+	return 4;
 }
 
 void XORB(CPU* c, MMU* m)
 {
+	CYCLES(XORr_r(c, &c->reg.A, &c->reg.B));
 }
 
 void XORC(CPU* c, MMU* m)
 {
+	CYCLES(XORr_r(c, &c->reg.A, &c->reg.C));
 }
 
 void XORD(CPU* c, MMU* m)
 {
+	CYCLES(XORr_r(c, &c->reg.A, &c->reg.D));
 }
 
 void XORE(CPU* c, MMU* m)
 {
+	CYCLES(XORr_r(c, &c->reg.A, &c->reg.E));
 }
 
 void XORH(CPU* c, MMU* m)
 {
+	CYCLES(XORr_r(c, &c->reg.A, &c->reg.H));
 }
 
 void XORL(CPU* c, MMU* m)
 {
+	CYCLES(XORr_r(c, &c->reg.A, &c->reg.L));
 }
 
 void XORHL(CPU* c, MMU* m)
 {
+	XORr_r(c, &c->reg.A, &m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(8);
 }
 
 void XORA(CPU* c, MMU* m)
 {
+	CYCLES(XORr_r(c, &c->reg.A, &c->reg.A));
 }
 
 /* B */
 
+int ORr_r(CPU* c, uint8_t* reg1, uint8_t* reg2)
+{
+	RESET_N(c->reg.F);
+	RESET_H(c->reg.F);
+	RESET_C(c->reg.F);
+
+	*reg1 = *reg1 | *reg2;
+
+	if(*reg1 == 0x0) SET_Z(c->reg.F);
+
+	return 4;
+}
+
 void ORB(CPU* c, MMU* m)
 {
+	CYCLES(ORr_r(c, &c->reg.A, &c->reg.B));
 }
 
 void ORC(CPU* c, MMU* m)
 {
+	CYCLES(ORr_r(c, &c->reg.A, &c->reg.C));
 }
 
 void ORD(CPU* c, MMU* m)
 {
+	CYCLES(ORr_r(c, &c->reg.A, &c->reg.D));
 }
 
 void ORE(CPU* c, MMU* m)
 {
+	CYCLES(ORr_r(c, &c->reg.A, &c->reg.E));
 }
 
 void ORH(CPU* c, MMU* m)
 {
+	CYCLES(ORr_r(c, &c->reg.A, &c->reg.H));
 }
 
 void ORL(CPU* c, MMU* m)
 {
+	CYCLES(ORr_r(c, &c->reg.A, &c->reg.L));
 }
 
 void ORHL(CPU* c, MMU* m)
 {
+	ORr_r(c, &c->reg.A, &m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(8);
 }
 
 void ORA(CPU* c, MMU* m)
 {
+	CYCLES(ORr_r(c, &c->reg.A, &c->reg.A));
+}
+
+int CPr_r(CPU* c, uint8_t* reg1, uint8_t* reg2)
+{
+	SET_N(c->reg.F);
+	if(CHECK_HALFCARRY(*reg1, *reg2)) // NOT SURE HOW THIS SHOULD WORK
+	{
+		SET_H(c->reg.F);
+	}
+	if(*reg1 < *reg2) SET_C(c->reg.F);
+	return 4;
 }
 
 void CPB(CPU* c, MMU* m)
 {
+	CYCLES(CPr_r(c, &c->reg.A, &c->reg.B));
 }
 
 void CPC(CPU* c, MMU* m)
 {
+	CYCLES(CPr_r(c, &c->reg.A, &c->reg.C));
 }
 
 void CPD(CPU* c, MMU* m)
 {
+	CYCLES(CPr_r(c, &c->reg.A, &c->reg.D));
 }
 
 void CPE(CPU* c, MMU* m)
 {
+	CYCLES(CPr_r(c, &c->reg.A, &c->reg.E));
 }
 
 void CPH(CPU* c, MMU* m)
 {
+	CYCLES(CPr_r(c, &c->reg.A, &c->reg.H));
 }
 
 void CP_L(CPU* c, MMU* m)
 {
+	CYCLES(CPr_r(c, &c->reg.A, &c->reg.L));
 }
 
 void CPHL(CPU* c, MMU* m)
 {
+	CPr_r(c, &c->reg.A, &m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(8);
 }
 
 void CPA(CPU* c, MMU* m)
 {
+	CYCLES(CPr_r(c, &c->reg.A, &c->reg.A));
 }
 
 /* C */
