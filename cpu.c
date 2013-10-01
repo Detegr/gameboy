@@ -16,7 +16,7 @@
 
 uint8_t inc(uint8_t* reg, uint8_t* flags)
 {
-	*reg++;
+	(*reg)++;
 	if(!(*reg & 0x0F)) // Lower nibble overflown
 	{
 		*flags |= HALFCARRY;
@@ -28,7 +28,7 @@ uint8_t inc(uint8_t* reg, uint8_t* flags)
 
 uint8_t dec(uint8_t* reg, uint8_t* flags)
 {
-	*reg--;
+	(*reg)--;
 	*flags |= SUBTRACT;
 	/* H - Set if no borrow from bit 4, aka no overflow on lower nibble */
 	if((*reg & 0x0F) != 0x0F) // Lower nibble not overflown
@@ -287,7 +287,7 @@ void RLA(CPU* c, MMU* m)
 
 void JRn(CPU* c, MMU* m)
 {
-	int8_t n=m[c->PC++];
+	int8_t n=m[c->PC];
 	c->PC+=n;
 	CYCLES(8);
 }
@@ -1458,14 +1458,24 @@ void POPBC(CPU* c, MMU* m)
 
 void JPNZnn(CPU* c, MMU* m)
 {
+	if((c->reg.F & ZERO) == 0x0) JPnn(c,m);
+	else CYCLES(12);
 }
 
 void JPnn(CPU* c, MMU* m)
 {
+	uint16_t addr=0;
+	uint8_t lsb=m[c->PC++];
+	uint8_t msb=m[c->PC++];
+	addr=WORD(msb, lsb);
+	c->PC=addr;
+	CYCLES(12);
 }
 
 void CALLNZnn(CPU* c, MMU* m)
 {
+	if((c->reg.F & ZERO) == 0x0) CALLnn(c,m);
+	else CYCLES(12);
 }
 
 void PUSHBC(CPU* c, MMU* m)
@@ -1489,12 +1499,14 @@ void RETZ(CPU* c, MMU* m)
 void RET(CPU* c, MMU* m)
 {// Pop two bytes from stack & jump to that address
 	c->PC=c->SP;
-	c->SP-=2;
+	c->SP+=2;
 	CYCLES(8);
 }
 
 void JPZnn(CPU* c, MMU* m)
 {
+	if(c->reg.F & ZERO) JPnn(c,m);
+	else CYCLES(12);
 }
 
 void Extops(CPU* c, MMU* m)
@@ -1503,10 +1515,18 @@ void Extops(CPU* c, MMU* m)
 
 void CALLZnn(CPU* c, MMU* m)
 {
+	if(c->reg.F & ZERO) CALLnn(c,m);
+	else CYCLES(12);
 }
 
 void CALLnn(CPU* c, MMU* m)
 {
+	c->SP-=2;
+	uint8_t lsb=m[c->PC++];
+	uint8_t msb=m[c->PC++];
+	m[c->SP]=c->PC;
+	c->PC=WORD(msb, lsb);
+	CYCLES(12);
 }
 
 void ADCAn(CPU* c, MMU* m)
@@ -1531,10 +1551,14 @@ void POPDE(CPU* c, MMU* m)
 
 void JPNCnn(CPU* c, MMU* m)
 {
+	if((c->reg.F & CARRY) == 0x0) JPnn(c,m);
+	else CYCLES(12);
 }
 
 void CALLNCnn(CPU* c, MMU* m)
 {
+	if((c->reg.F & CARRY) == 0x0) CALLnn(c,m);
+	else CYCLES(12);
 }
 
 void PUSHDE(CPU* c, MMU* m)
@@ -1563,10 +1587,14 @@ void RETI(CPU* c, MMU* m)
 
 void JPCnn(CPU* c, MMU* m)
 {
+	if(c->reg.F & CARRY) JPnn(c,m);
+	else CYCLES(12);
 }
 
 void CALLCnn(CPU* c, MMU* m)
 {
+	if(c->reg.F & CARRY) CALLnn(c,m);
+	else CYCLES(12);
 }
 
 void SBCAn(CPU* c, MMU* m)
@@ -1609,6 +1637,8 @@ void ADDSPd(CPU* c, MMU* m)
 
 void JPHL(CPU* c, MMU* m)
 {
+	c->PC=m[WORD(c->reg.H, c->reg.L)];
+	CYCLES(4);
 }
 
 void LDnnA(CPU* c, MMU* m)
