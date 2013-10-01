@@ -241,7 +241,7 @@ void CP_L(CPU* c, MMU* m);
 void CPHL(CPU* c, MMU* m);
 void CPA(CPU* c, MMU* m);
 
-void ETNZ(CPU* c, MMU* m);
+void RETNZ(CPU* c, MMU* m);
 void POPBC(CPU* c, MMU* m);
 void JPNZnn(CPU* c, MMU* m);
 void JPnn(CPU* c, MMU* m);
@@ -310,7 +310,7 @@ OpCode OpCodes[256]={
     &SUBAB, &SUBAC, &SUBAD, &SUBAE, &SUBAH, &SUBAL, &SUBAHL, &SUBAA, &SBCAB, &SBCAC, &SBCAD, &SBCAE, &SBCAH, &SBCAL, &SBCAHL, &SBCAA, 
     &ANDB, &ANDC, &ANDD, &ANDE, &ANDH, &ANDL, &ANDHL, &ANDA, &XORB, &XORC, &XORD, &XORE, &XORH, &XORL, &XORHL, &XORA, 
     &ORB, &ORC, &ORD, &ORE, &ORH, &ORL, &ORHL, &ORA, &CPB, &CPC, &CPD, &CPE, &CPH, &CP_L, &CPHL, &CPA, 
-    &ETNZ, &POPBC, &JPNZnn, &JPnn, &CALLNZnn, &PUSHBC, &ADDAn, &RST0, &RETZ, &RET, &JPZnn, &Extops, &CALLZnn, &CALLnn, &ADCAn, &RST8, 
+    &RETNZ, &POPBC, &JPNZnn, &JPnn, &CALLNZnn, &PUSHBC, &ADDAn, &RST0, &RETZ, &RET, &JPZnn, &Extops, &CALLZnn, &CALLnn, &ADCAn, &RST8, 
     &RETNC, &POPDE, &JPNCnn, 0, &CALLNCnn, &PUSHDE, &SUBAn, &RST10, &RETC, &RETI, &JPCnn, 0, &CALLCnn, 0, &SBCAn, &RST18, 
     &LDHnA, &POPHL, &LDHCA, 0, 0, &PUSHHL, &ANDn, &RST20, &ADDSPd, &JPHL, &LDnnA, 0, 0, 0, &XORn, &RST28, 
     &LDHAn, &POPAF, 0, &DI, 0, &PUSHAF, &ORn, &RST30, &LDHLSPd, &LDSPHL, &LDAnn, &EI, 0, 0, &CPn, &RST38

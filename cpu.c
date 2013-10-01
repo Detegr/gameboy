@@ -1395,7 +1395,7 @@ void ORA(CPU* c, MMU* m)
 int CPr_r(CPU* c, uint8_t* reg1, uint8_t* reg2)
 {
 	SET_N(c->reg.F);
-	if(CHECK_HALFCARRY(*reg1, *reg2)) // NOT SURE HOW THIS SHOULD WORK
+	if(CHECK_HALFCARRY(*reg1, *reg2))
 	{
 		SET_H(c->reg.F);
 	}
@@ -1446,8 +1446,10 @@ void CPA(CPU* c, MMU* m)
 
 /* C */
 
-void ETNZ(CPU* c, MMU* m)
+void RETNZ(CPU* c, MMU* m)
 {
+	if(!(c->reg.F & ZERO)) CYCLES(RET(c,m));
+	else CYCLES(8);
 }
 
 void POPBC(CPU* c, MMU* m)
@@ -1480,10 +1482,15 @@ void RST0(CPU* c, MMU* m)
 
 void RETZ(CPU* c, MMU* m)
 {
+	if(c->reg.F & ZERO) CYCLES(RET(c,m));
+	else CYCLES(8);
 }
 
 void RET(CPU* c, MMU* m)
-{
+{// Pop two bytes from stack & jump to that address
+	c->PC=c->SP;
+	c->SP-=2;
+	CYCLES(8);
 }
 
 void JPZnn(CPU* c, MMU* m)
@@ -1514,6 +1521,8 @@ void RST8(CPU* c, MMU* m)
 
 void RETNC(CPU* c, MMU* m)
 {
+	if(!(c->reg.F & CARRY)) CYCLES(RET(c,m));
+	else CYCLES(8);
 }
 
 void POPDE(CPU* c, MMU* m)
@@ -1542,6 +1551,8 @@ void RST10(CPU* c, MMU* m)
 
 void RETC(CPU* c, MMU* m)
 {
+	if(c->reg.F & CARRY) CYCLES(RET(c,m));
+	else CYCLES(8);
 }
 
 void RETI(CPU* c, MMU* m)
