@@ -169,10 +169,12 @@ void RLCA(CPU* c, MMU* m)
 
 void LDnnSP(CPU* c, MMU* m)
 {
-	uint16_t addr;
-	(&addr)[0] = m[c->PC++];
-	(&addr)[1] = m[c->PC++];
-	m[addr]=c->SP;
+	uint8_t lsb;
+	uint8_t msb;
+	lsb=m[c->PC++];
+	msb=m[c->PC++];
+	uint16_t imm=WORD(msb,lsb);
+	m[imm]=c->SP;
 	CYCLES(20);
 }
 
@@ -287,8 +289,7 @@ void RLA(CPU* c, MMU* m)
 
 void JRn(CPU* c, MMU* m)
 {
-	int8_t n=m[c->PC];
-	c->PC+=n;
+	c->PC+=m[c->PC];
 	CYCLES(8);
 }
 
@@ -548,10 +549,9 @@ void JRNCn(CPU* c, MMU* m)
 
 void LDSPnn(CPU* c, MMU* m)
 {
-	uint16_t val;
-	(&val)[0] = m[c->PC++];
-	(&val)[1] = m[c->PC++];
-	c->SP = val;
+	uint8_t lsb=m[c->PC++];
+	uint8_t msb=m[c->PC++];
+	c->SP = WORD(msb,lsb);
 	CYCLES(12);
 }
 
@@ -1452,8 +1452,16 @@ void RETNZ(CPU* c, MMU* m)
 	else CYCLES(8);
 }
 
+void POPr_r(CPU* c, MMU* m, uint8_t* reg1, uint8_t* reg2)
+{
+	*reg1=m[c->SP++];
+	*reg2=m[c->SP++];
+	CYCLES(12);
+}
+
 void POPBC(CPU* c, MMU* m)
 {
+	POPr_r(c,m,&c->reg.B,&c->reg.C);
 }
 
 void JPNZnn(CPU* c, MMU* m)
@@ -1478,16 +1486,34 @@ void CALLNZnn(CPU* c, MMU* m)
 	else CYCLES(12);
 }
 
+void PUSHr_r(CPU* c, MMU* m, uint8_t* reg1, uint8_t* reg2)
+{
+	m[--c->SP]=*reg1;
+	m[--c->SP]=*reg2;
+	CYCLES(16);
+}
+
 void PUSHBC(CPU* c, MMU* m)
 {
+	PUSHr_r(c,m,&c->reg.B,&c->reg.C);
 }
 
 void ADDAn(CPU* c, MMU* m)
 {
+	ADDr_r(c, &c->reg.A, &m[c->PC++]);
+	CYCLES(8);
+}
+
+void RST(CPU* c, MMU* m, uint8_t val)
+{
+	m[--c->SP]=c->PC;
+	c->PC=val;
+	CYCLES(32);
 }
 
 void RST0(CPU* c, MMU* m)
 {
+	RST(c,m,0);
 }
 
 void RETZ(CPU* c, MMU* m)
@@ -1531,10 +1557,13 @@ void CALLnn(CPU* c, MMU* m)
 
 void ADCAn(CPU* c, MMU* m)
 {
+	ADCr_r(c, &c->reg.A, &m[c->PC++]);
+	CYCLES(8);
 }
 
 void RST8(CPU* c, MMU* m)
 {
+	RST(c,m,0x8);
 }
 
 /* D */
@@ -1547,6 +1576,7 @@ void RETNC(CPU* c, MMU* m)
 
 void POPDE(CPU* c, MMU* m)
 {
+	POPr_r(c,m,&c->reg.D,&c->reg.E);
 }
 
 void JPNCnn(CPU* c, MMU* m)
@@ -1563,14 +1593,18 @@ void CALLNCnn(CPU* c, MMU* m)
 
 void PUSHDE(CPU* c, MMU* m)
 {
+	PUSHr_r(c,m,&c->reg.D,&c->reg.E);
 }
 
 void SUBAn(CPU* c, MMU* m)
 {
+	SUBr_r(c,&c->reg.A, &m[c->PC++]);
+	CYCLES(8);
 }
 
 void RST10(CPU* c, MMU* m)
 {
+	RST(c,m,0x10);
 }
 
 void RETC(CPU* c, MMU* m)
@@ -1599,40 +1633,57 @@ void CALLCnn(CPU* c, MMU* m)
 
 void SBCAn(CPU* c, MMU* m)
 {
+	SBCr_r(c, &c->reg.A, &m[c->PC++]);
+	CYCLES(8);
 }
 
 void RST18(CPU* c, MMU* m)
 {
+	RST(c,m,0x18);
 }
 
 /* E */
 
 void LDHnA(CPU* c, MMU* m)
 {
+	m[0xFF00 + m[c->PC++]]=c->reg.A;
+	CYCLES(12);
 }
 
 void POPHL(CPU* c, MMU* m)
 {
+	POPr_r(c,m,&c->reg.H,&c->reg.L);
 }
 
 void LDHCA(CPU* c, MMU* m)
 {
+	m[0xFF00 + c->reg.C]=c->reg.A;
+	CYCLES(8);
 }
 
 void PUSHHL(CPU* c, MMU* m)
 {
+	PUSHr_r(c,m,&c->reg.H,&c->reg.L);
 }
 
 void ANDn(CPU* c, MMU* m)
 {
+	ANDr_r(c, &c->reg.A, &m[c->PC++]);
+	CYCLES(8);
 }
 
 void RST20(CPU* c, MMU* m)
 {
+	RST(c,m,0x20);
 }
 
 void ADDSPd(CPU* c, MMU* m)
 {
+	RESET_Z(c->reg.F);
+	RESET_N(c->reg.F);
+	uint8_t tmp=0;
+	ADDrr_rr(c, (uint8_t*)&c->SP, (uint8_t*)(&c->SP)+1, &tmp, &m[c->PC++]);
+	CYCLES(16);
 }
 
 void JPHL(CPU* c, MMU* m)
@@ -1643,64 +1694,98 @@ void JPHL(CPU* c, MMU* m)
 
 void LDnnA(CPU* c, MMU* m)
 {
+	uint8_t lsb=m[c->PC++];
+	uint8_t msb=m[c->PC++];
+	uint16_t imm=WORD(msb,lsb);
+	m[imm]=uint16_t(c->reg.A);
+	CYCLES(16);
 }
 
 void XORn(CPU* c, MMU* m)
 {
+	XORr_r(c, &c->reg.A, &m[c->PC++]);
+	CYCLES(8);
 }
 
 void RST28(CPU* c, MMU* m)
 {
+	RST(c,m,0x28);
 }
 
 /* F */
 
 void LDHAn(CPU* c, MMU* m)
 {
+	c->reg.A=m[0xFF00 + m[c->PC++]];
+	CYCLES(12);
 }
 
 void POPAF(CPU* c, MMU* m)
 {
+	POPr_r(c,m,&c->reg.A,&c->reg.F);
 }
 
 void DI(CPU* c, MMU* m)
 {
+	/* Disable interrupts */
 }
 
 void PUSHAF(CPU* c, MMU* m)
 {
+	PUSHr_r(c,m,&c->reg.A,&c->reg.F);
 }
 
 void ORn(CPU* c, MMU* m)
 {
+	ORr_r(c, &c->reg.A, &m[c->PC++]);
+	CYCLES(8);
 }
 
 void RST30(CPU* c, MMU* m)
 {
+	RST(c,m,0x30);
 }
 
 void LDHLSPd(CPU* c, MMU* m)
 {
+	// TODO: Check endianess
+	RESET_Z(c->reg.F);
+	RESET_N(c->reg.F);
+	uint16_t val=c->SP+m[c->PC++];
+	c->reg.H=val&0xFF00;
+	c->reg.L=val>>8;
+	CYCLES(12);
 }
 
 void LDSPHL(CPU* c, MMU* m)
 {
+	c->SP=WORD(c->reg.H, c->reg.L);
+	CYCLES(8);
 }
 
 void LDAnn(CPU* c, MMU* m)
 {
+	uint8_t lsb=m[c->PC++];
+	uint8_t msb=m[c->PC++];
+	uint16_t imm=WORD(msb, lsb);
+	c->reg.A=m[imm];
+	CYCLES(16);
 }
 
 void EI(CPU* c, MMU* m)
 {
+	/* Enable interrupts */
 }
 
 void CPn(CPU* c, MMU* m)
 {
+	CPr_r(c, &c->reg.A, &m[c->PC++]);
+	CYCLES(8);
 }
 
 void RST38(CPU* c, MMU* m)
 {
+	RST(c,m,0x38);
 }
 
 int main(){} // For compiling to check typos
