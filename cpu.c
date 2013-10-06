@@ -2072,6 +2072,7 @@ int SWAPr(CPU* c, MMU* m, uint8_t* reg)
 	uint8_t uptmp=(*reg)>>4;
 	*reg <<= 4;
 	*reg |= uptmp;
+	if(!*reg) SET_Z(c->reg.F);
 	return 8;
 }
 
@@ -2152,260 +2153,341 @@ void SRLA(CPU* c, MMU* m)
 {
 }
 
+int BITr(CPU*c, MMU* m, uint8_t b, uint8_t* reg)
+{
+	RESET_N(c->reg.F);
+	SET_H(c->reg.F);
+	// TODO: Make the bit check according to b
+	if(*reg & 0x01) SET_Z(c->reg.F);
+	return 8;
+}
+
 void BIT0B(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,0,&c->reg.B));
 }
 
 void BIT0C(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,0,&c->reg.C));
 }
 
 void BIT0D(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,0,&c->reg.D));
 }
 
 void BIT0E(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,0,&c->reg.E));
 }
 
 void BIT0H(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,0,&c->reg.H));
 }
 
 void BIT0L(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,0,&c->reg.L));
 }
 
 void BIT0HL(CPU* c, MMU* m)
 {
+	BITr(c,m,0,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void BIT0A(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,0,&c->reg.A));
 }
 
 void BIT1B(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,1,&c->reg.B));
 }
 
 void BIT1C(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,1,&c->reg.C));
 }
 
 void BIT1D(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,1,&c->reg.D));
 }
 
 void BIT1E(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,1,&c->reg.E));
 }
 
 void BIT1H(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,1,&c->reg.H));
 }
 
 void BIT1L(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,1,&c->reg.L));
 }
 
 void BIT1HL(CPU* c, MMU* m)
 {
+	BITr(c,m,1,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void BIT1A(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,1,&c->reg.A));
 }
 
 void BIT2B(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,2,&c->reg.B));
 }
 
 void BIT2C(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,2,&c->reg.C));
 }
 
 void BIT2D(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,2,&c->reg.D));
 }
 
 void BIT2E(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,2,&c->reg.E));
 }
 
 void BIT2H(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,2,&c->reg.H));
 }
 
 void BIT2L(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,2,&c->reg.L));
 }
 
 void BIT2HL(CPU* c, MMU* m)
 {
+	BITr(c,m,2,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void BIT2A(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,2,&c->reg.A));
 }
 
 void BIT3B(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,3,&c->reg.B));
 }
 
 void BIT3C(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,3,&c->reg.C));
 }
 
 void BIT3D(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,3,&c->reg.D));
 }
 
 void BIT3E(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,3,&c->reg.E));
 }
 
 void BIT3H(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,3,&c->reg.H));
 }
 
 void BIT3L(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,3,&c->reg.L));
 }
 
 void BIT3HL(CPU* c, MMU* m)
 {
+	BITr(c,m,3,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void BIT3A(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,3,&c->reg.A));
 }
 
 void BIT4B(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,4,&c->reg.B));
 }
 
 void BIT4C(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,4,&c->reg.C));
 }
 
 void BIT4D(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,4,&c->reg.D));
 }
 
 void BIT4E(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,4,&c->reg.E));
 }
 
 void BIT4H(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,4,&c->reg.H));
 }
 
 void BIT4L(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,4,&c->reg.L));
 }
 
 void BIT4HL(CPU* c, MMU* m)
 {
+	BITr(c,m,4,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void BIT4A(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,3,&c->reg.A));
 }
 
 void BIT5B(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,5,&c->reg.B));
 }
 
 void BIT5C(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,5,&c->reg.C));
 }
 
 void BIT5D(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,5,&c->reg.D));
 }
 
 void BIT5E(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,5,&c->reg.E));
 }
 
 void BIT5H(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,5,&c->reg.H));
 }
 
 void BIT5L(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,5,&c->reg.L));
 }
 
 void BIT5HL(CPU* c, MMU* m)
 {
+	BITr(c,m,5,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void BIT5A(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,4,&c->reg.A));
 }
 
 void BIT6B(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,6,&c->reg.B));
 }
 
 void BIT6C(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,6,&c->reg.C));
 }
 
 void BIT6D(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,6,&c->reg.D));
 }
 
 void BIT6E(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,6,&c->reg.E));
 }
 
 void BIT6H(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,6,&c->reg.H));
 }
 
 void BIT6L(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,6,&c->reg.L));
 }
 
 void BIT6HL(CPU* c, MMU* m)
 {
+	BITr(c,m,6,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void BIT6A(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,5,&c->reg.A));
 }
 
 void BIT7B(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,7,&c->reg.B));
 }
 
 void BIT7C(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,7,&c->reg.C));
 }
 
 void BIT7D(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,7,&c->reg.D));
 }
 
 void BIT7E(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,7,&c->reg.E));
 }
 
 void BIT7H(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,7,&c->reg.H));
 }
 
 void BIT7L(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,7,&c->reg.L));
 }
 
 void BIT7HL(CPU* c, MMU* m)
 {
+	BITr(c,m,7,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void BIT7A(CPU* c, MMU* m)
 {
+	CYCLES(BITr(c,m,7,&c->reg.A));
 }
 
 void RES0B(CPU* c, MMU* m)
