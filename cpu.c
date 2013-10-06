@@ -1895,7 +1895,7 @@ void RRCL(CPU* c, MMU* m)
 void RRCHL(CPU* c, MMU* m)
 {
 	RRCr(c,m,&m[WORD(c->reg.H, c->reg.L)]);
-	CYCLES(8);
+	CYCLES(16);
 }
 
 void RRCAext(CPU* c, MMU* m)
@@ -1991,7 +1991,7 @@ void RRL(CPU* c, MMU* m)
 void RRHL(CPU* c, MMU* m)
 {
 	RRr(c,m,&m[WORD(c->reg.H, c->reg.L)]);
-	CYCLES(8);
+	CYCLES(16);
 }
 
 void RRAext(CPU* c, MMU* m)
@@ -2077,42 +2077,43 @@ int SWAPr(CPU* c, MMU* m, uint8_t* reg)
 
 void SWAPB(CPU* c, MMU* m)
 {
-	CYCLES(c,m,&c->reg.B);
+	CYCLES(SWAPr(c,m,&c->reg.B));
 }
 
 void SWAPC(CPU* c, MMU* m)
 {
-	CYCLES(c,m,&c->reg.C);
+	CYCLES(SWAPr(c,m,&c->reg.C));
 }
 
 void SWAPD(CPU* c, MMU* m)
 {
-	CYCLES(c,m,&c->reg.D);
+	CYCLES(SWAPr(c,m,&c->reg.D));
 }
 
 void SWAPE(CPU* c, MMU* m)
 {
-	CYCLES(c,m,&c->reg.E);
+	CYCLES(SWAPr(c,m,&c->reg.E));
 }
 
 void SWAPH(CPU* c, MMU* m)
 {
-	CYCLES(c,m,&c->reg.H);
+	CYCLES(SWAPr(c,m,&c->reg.H));
 }
 
 void SWAPL(CPU* c, MMU* m)
 {
-	CYCLES(c,m,&c->reg.L);
+	CYCLES(SWAPr(c,m,&c->reg.L));
 }
 
 void SWAPHL(CPU* c, MMU* m)
 {
-	CYCLES(c,m,&m[WORD(c->reg.H, c->reg.L)]);
+	SWAPr(c,m,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void SWAPA(CPU* c, MMU* m)
 {
-	CYCLES(c,m,&c->reg.A);
+	CYCLES(SWAPr(c,m,&c->reg.A));
 }
 
 void SRLB(CPU* c, MMU* m)
