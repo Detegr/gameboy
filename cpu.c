@@ -216,21 +216,26 @@ void LDCn(CPU* c, MMU* m)
 	CYCLES(8);
 }
 
-void RRCA(CPU* c, MMU* m)
+int RRCr(CPU* c, MMU* m, uint8_t* reg)
 {
 	/* Rotate register right */
 	c->reg.F &= ~CARRY; // Reset carry flag
-	if(c->reg.A & 0x01)
+	if(*reg & 0x00)
 	{
 		c->reg.F |= CARRY; // Contains old bit 0 data
 	}
-	c->reg.A >>= 1;
+	*reg >>= 1;
 	if(c->reg.F & CARRY)
 	{
-		c->reg.A |= 0x80;
+		*reg |= 0x80;
 	}
-	if(!c->reg.A) c->reg.F |= ZERO;
-	CYCLES(4);
+	if(!*reg) c->reg.F |= ZERO;
+	return 4;
+}
+
+void RRCA(CPU* c, MMU* m)
+{
+	CYCLES(RRCr(c,m,&c->reg.A);
 }
 
 /* 1 */
@@ -274,7 +279,7 @@ void LDDn(CPU* c, MMU* m)
 	CYCLES(8);
 }
 
-void RLA(CPU* c, MMU* m)
+int RLr(CPU* c, MMU* m, uint8_t* reg)
 {
 	/* Rotate register left through carry flag */
 	uint8_t old_carry = c->reg.F & CARRY;
@@ -283,13 +288,18 @@ void RLA(CPU* c, MMU* m)
 	{
 		c->reg.F |= CARRY; // Contains old bit 7 data
 	}
-	c->reg.A <<= 1;
+	*reg <<= 1;
 	if(old_carry)
 	{
-		c->reg.A |= 0x01;
+		*reg |= 0x01;
 	}
-	if(!c->reg.A) c->reg.F |= ZERO;
-	CYCLES(4);
+	if(!*reg) c->reg.F |= ZERO;
+	return 4;
+}
+
+void RLA(CPU* c, MMU* m)
+{
+	CYCLES(RLr(c,m,&c->reg.A));
 }
 
 void JRn(CPU* c, MMU* m)
@@ -331,22 +341,27 @@ void LDEn(CPU* c, MMU* m)
 	CYCLES(8);
 }
 
-void RRA(CPU* c, MMU* m)
+int RRr(CPU* c, MMU*m, uint8_t* reg)
 {
 	/* Rotate register right through carry flag */
 	uint8_t old_carry = c->reg.F & CARRY;
 	c->reg.F &= ~CARRY; // Reset carry flag
-	if(c->reg.A & 0x01)
+	if(*reg & 0x01)
 	{
 		c->reg.F |= CARRY; // Contains old bit 0 data
 	}
-	c->reg.A >>= 1;
+	*reg >>= 1;
 	if(old_carry)
 	{
-		c->reg.A |= 0x80;
+		*reg |= 0x80;
 	}
-	if(!c->reg.A) c->reg.F |= ZERO;
-	CYCLES(4);
+	if(!*reg) c->reg.F |= ZERO;
+	return 4;
+}
+
+void RRA(CPU* c, MMU* m)
+{
+	CYCLES(RRr(c,m,&c->reg.A));
 }
 
 /* 2 */
@@ -1831,7 +1846,7 @@ void RLCL(CPU* c, MMU* m)
 
 void RLCHL(CPU* c, MMU* m)
 {
-	RLCr(c,m,&m[WORD(c->reg.H, c->reg.L)]);
+	RLCr(c,m,)]);
 	CYCLES(16);
 }
 
@@ -1843,98 +1858,146 @@ void RLCAext(CPU* c, MMU* m)
 
 void RRCB(CPU* c, MMU* m)
 {
+	RRCr(c,m,&c->reg.B);
+	CYCLES(8);
 }
 
 void RRCC(CPU* c, MMU* m)
 {
+	RRCr(c,m,&c->reg.C);
+	CYCLES(8);
 }
 
 void RRCD(CPU* c, MMU* m)
 {
+	RRCr(c,m,&c->reg.D);
+	CYCLES(8);
 }
 
 void RRCE(CPU* c, MMU* m)
 {
+	RRCr(c,m,&c->reg.E);
+	CYCLES(8);
 }
 
 void RRCH(CPU* c, MMU* m)
 {
+	RRCr(c,m,&c->reg.H);
+	CYCLES(8);
 }
 
 void RRCL(CPU* c, MMU* m)
 {
+	RRCr(c,m,&c->reg.L);
+	CYCLES(8);
 }
 
 void RRCHL(CPU* c, MMU* m)
 {
+	RRCr(c,m,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(8);
 }
 
 void RRCAext(CPU* c, MMU* m)
 {
+	RRCr(c,m,&c->reg.A);
+	CYCLES(8);
 }
 
 void RLB(CPU* c, MMU* m)
 {
+	RLr(c,m,&c->reg.B);
+	CYCLES(8);
 }
 
 void RLC(CPU* c, MMU* m)
 {
+	RLr(c,m,&c->reg.C);
+	CYCLES(8);
 }
 
 void RLD(CPU* c, MMU* m)
 {
+	RLr(c,m,&c->reg.D);
+	CYCLES(8);
 }
 
 void RLE(CPU* c, MMU* m)
 {
+	RLr(c,m,&c->reg.E);
+	CYCLES(8);
 }
 
 void RLH(CPU* c, MMU* m)
 {
+	RLr(c,m,&c->reg.H);
+	CYCLES(8);
 }
 
 void RLL(CPU* c, MMU* m)
 {
+	RLr(c,m,&c->reg.L);
+	CYCLES(8);
 }
 
 void RLHL(CPU* c, MMU* m)
 {
+	RLr(c,m,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void RLAext(CPU* c, MMU* m)
 {
+	RLr(c,m,&c->reg.A);
+	CYCLES(8);
 }
 
 void RRB(CPU* c, MMU* m)
 {
+	RRr(c,m,&c->reg.B);
+	CYCLES(8);
 }
 
 void RRC(CPU* c, MMU* m)
 {
+	RRr(c,m,&c->reg.C);
+	CYCLES(8);
 }
 
 void RRD(CPU* c, MMU* m)
 {
+	RRr(c,m,&c->reg.D);
+	CYCLES(8);
 }
 
 void RRE(CPU* c, MMU* m)
 {
+	RRr(c,m,&c->reg.E);
+	CYCLES(8);
 }
 
 void RRH(CPU* c, MMU* m)
 {
+	RRr(c,m,&c->reg.H);
+	CYCLES(8);
 }
 
 void RRL(CPU* c, MMU* m)
 {
+	RRr(c,m,&c->reg.L);
+	CYCLES(8);
 }
 
 void RRHL(CPU* c, MMU* m)
 {
+	RRr(c,m,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(8);
 }
 
 void RRAext(CPU* c, MMU* m)
 {
+	RRr(c,m,&c->reg.A);
+	CYCLES(8);
 }
 
 void SLAB(CPU* c, MMU* m)
