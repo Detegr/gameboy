@@ -299,6 +299,280 @@ void EI(CPU* c, MMU* m);
 void CPn(CPU* c, MMU* m);
 void RST38(CPU* c, MMU* m);
 
+void RLCB(CPU* c, MMU* m);
+void RLCC(CPU* c, MMU* m);
+void RLCD(CPU* c, MMU* m);
+void RLCE(CPU* c, MMU* m);
+void RLCF(CPU* c, MMU* m);
+void RLCG(CPU* c, MMU* m);
+void RLCH(CPU* c, MMU* m);
+void RLCHL(CPU* c, MMU* m);
+void RLCAext(CPU* c, MMU* m);
+void RRCB(CPU* c, MMU* m);
+void RRCC(CPU* c, MMU* m);
+void RRCD(CPU* c, MMU* m);
+void RRCE(CPU* c, MMU* m);
+void RRCH(CPU* c, MMU* m);
+void RRCL(CPU* c, MMU* m);
+void RRCHL(CPU* c, MMU* m);
+void RRCAext(CPU* c, MMU* m);
+
+void RLB(CPU* c, MMU* m);
+void RLC(CPU* c, MMU* m);
+void RLD(CPU* c, MMU* m);
+void RLE(CPU* c, MMU* m);
+void RLH(CPU* c, MMU* m);
+void RLL(CPU* c, MMU* m);
+void RLHL(CPU* c, MMU* m);
+void RLAext(CPU* c, MMU* m);
+void RRB(CPU* c, MMU* m);
+void RRC(CPU* c, MMU* m);
+void RRD(CPU* c, MMU* m);
+void RRE(CPU* c, MMU* m);
+void RRH(CPU* c, MMU* m);
+void RRL(CPU* c, MMU* m);
+void RRHL(CPU* c, MMU* m);
+void RRAext(CPU* c, MMU* m);
+
+void SLAB(CPU* c, MMU* m);
+void SLAC(CPU* c, MMU* m);
+void SLAD(CPU* c, MMU* m);
+void SLAE(CPU* c, MMU* m);
+void SLAH(CPU* c, MMU* m);
+void SLAL(CPU* c, MMU* m);
+void SLAHL(CPU* c, MMU* m);
+void SLAA(CPU* c, MMU* m);
+void SRAB(CPU* c, MMU* m);
+void SRAC(CPU* c, MMU* m);
+void SRAD(CPU* c, MMU* m);
+void SRAE(CPU* c, MMU* m);
+void SRAH(CPU* c, MMU* m);
+void SRAL(CPU* c, MMU* m);
+void SRAHL(CPU* c, MMU* m);
+void SRAA(CPU* c, MMU* m);
+
+void SWAPB(CPU* c, MMU* m);
+void SWAPC(CPU* c, MMU* m);
+void SWAPD(CPU* c, MMU* m);
+void SWAPE(CPU* c, MMU* m);
+void SWAPH(CPU* c, MMU* m);
+void SWAPL(CPU* c, MMU* m);
+void SWAPHL(CPU* c, MMU* m);
+void SWAPA(CPU* c, MMU* m);
+void SRLB(CPU* c, MMU* m);
+void SRLC(CPU* c, MMU* m);
+void SRLD(CPU* c, MMU* m);
+void SRLE(CPU* c, MMU* m);
+void SRLF(CPU* c, MMU* m);
+void SRLH(CPU* c, MMU* m);
+void SRLL(CPU* c, MMU* m);
+void SRLHL(CPU* c, MMU* m);
+void SRLA(CPU* c, MMU* m);
+
+void BIT0B(CPU* c, MMU* m);
+void BIT0C(CPU* c, MMU* m);
+void BIT0D(CPU* c, MMU* m);
+void BIT0E(CPU* c, MMU* m);
+void BIT0H(CPU* c, MMU* m);
+void BIT0L(CPU* c, MMU* m);
+void BIT0HL(CPU* c, MMU* m);
+void BIT0A(CPU* c, MMU* m);
+void BIT1B(CPU* c, MMU* m);
+void BIT1C(CPU* c, MMU* m);
+void BIT1D(CPU* c, MMU* m);
+void BIT1E(CPU* c, MMU* m);
+void BIT1H(CPU* c, MMU* m);
+void BIT1L(CPU* c, MMU* m);
+void BIT1HL(CPU* c, MMU* m);
+void BIT1A(CPU* c, MMU* m);
+
+void BIT2B(CPU* c, MMU* m);
+void BIT2C(CPU* c, MMU* m);
+void BIT2D(CPU* c, MMU* m);
+void BIT2E(CPU* c, MMU* m);
+void BIT2H(CPU* c, MMU* m);
+void BIT2L(CPU* c, MMU* m);
+void BIT2HL(CPU* c, MMU* m);
+void BIT2A(CPU* c, MMU* m);
+void BIT3B(CPU* c, MMU* m);
+void BIT3C(CPU* c, MMU* m);
+void BIT3D(CPU* c, MMU* m);
+void BIT3E(CPU* c, MMU* m);
+void BIT3H(CPU* c, MMU* m);
+void BIT3L(CPU* c, MMU* m);
+void BIT3HL(CPU* c, MMU* m);
+void BIT3A(CPU* c, MMU* m);
+
+void BIT4B(CPU* c, MMU* m);
+void BIT4C(CPU* c, MMU* m);
+void BIT4D(CPU* c, MMU* m);
+void BIT4E(CPU* c, MMU* m);
+void BIT4H(CPU* c, MMU* m);
+void BIT4L(CPU* c, MMU* m);
+void BIT4HL(CPU* c, MMU* m);
+void BIT4A(CPU* c, MMU* m);
+void BIT5B(CPU* c, MMU* m);
+void BIT5C(CPU* c, MMU* m);
+void BIT5D(CPU* c, MMU* m);
+void BIT5E(CPU* c, MMU* m);
+void BIT5H(CPU* c, MMU* m);
+void BIT5L(CPU* c, MMU* m);
+void BIT5HL(CPU* c, MMU* m);
+void BIT5A(CPU* c, MMU* m);
+
+void BIT6B(CPU* c, MMU* m);
+void BIT6C(CPU* c, MMU* m);
+void BIT6D(CPU* c, MMU* m);
+void BIT6E(CPU* c, MMU* m);
+void BIT6H(CPU* c, MMU* m);
+void BIT6L(CPU* c, MMU* m);
+void BIT6HL(CPU* c, MMU* m);
+void BIT6A(CPU* c, MMU* m);
+void BIT7B(CPU* c, MMU* m);
+void BIT7C(CPU* c, MMU* m);
+void BIT7D(CPU* c, MMU* m);
+void BIT7E(CPU* c, MMU* m);
+void BIT7H(CPU* c, MMU* m);
+void BIT7L(CPU* c, MMU* m);
+void BIT7HL(CPU* c, MMU* m);
+void BIT7A(CPU* c, MMU* m);
+
+void RES0B(CPU* c, MMU* m);
+void RES0C(CPU* c, MMU* m);
+void RES0D(CPU* c, MMU* m);
+void RES0E(CPU* c, MMU* m);
+void RES0H(CPU* c, MMU* m);
+void RES0L(CPU* c, MMU* m);
+void RES0HL(CPU* c, MMU* m);
+void RES0A(CPU* c, MMU* m);
+void RES1B(CPU* c, MMU* m);
+void RES1C(CPU* c, MMU* m);
+void RES1D(CPU* c, MMU* m);
+void RES1E(CPU* c, MMU* m);
+void RES1H(CPU* c, MMU* m);
+void RES1L(CPU* c, MMU* m);
+void RES1HL(CPU* c, MMU* m);
+void RES1A(CPU* c, MMU* m);
+
+void RES2B(CPU* c, MMU* m);
+void RES2C(CPU* c, MMU* m);
+void RES2D(CPU* c, MMU* m);
+void RES2E(CPU* c, MMU* m);
+void RES2H(CPU* c, MMU* m);
+void RES2L(CPU* c, MMU* m);
+void RES2HL(CPU* c, MMU* m);
+void RES2A(CPU* c, MMU* m);
+void RES3B(CPU* c, MMU* m);
+void RES3C(CPU* c, MMU* m);
+void RES3D(CPU* c, MMU* m);
+void RES3E(CPU* c, MMU* m);
+void RES3H(CPU* c, MMU* m);
+void RES3L(CPU* c, MMU* m);
+void RES3HL(CPU* c, MMU* m);
+void RES3A(CPU* c, MMU* m);
+
+void RES4B(CPU* c, MMU* m);
+void RES4C(CPU* c, MMU* m);
+void RES4D(CPU* c, MMU* m);
+void RES4E(CPU* c, MMU* m);
+void RES4H(CPU* c, MMU* m);
+void RES4L(CPU* c, MMU* m);
+void RES4HL(CPU* c, MMU* m);
+void RES4A(CPU* c, MMU* m);
+void RES5B(CPU* c, MMU* m);
+void RES5C(CPU* c, MMU* m);
+void RES5D(CPU* c, MMU* m);
+void RES5E(CPU* c, MMU* m);
+void RES5H(CPU* c, MMU* m);
+void RES5L(CPU* c, MMU* m);
+void RES5HL(CPU* c, MMU* m);
+void RES5A(CPU* c, MMU* m);
+
+void RES6B(CPU* c, MMU* m);
+void RES6C(CPU* c, MMU* m);
+void RES6D(CPU* c, MMU* m);
+void RES6E(CPU* c, MMU* m);
+void RES6H(CPU* c, MMU* m);
+void RES6L(CPU* c, MMU* m);
+void RES6HL(CPU* c, MMU* m);
+void RES6A(CPU* c, MMU* m);
+void RES7B(CPU* c, MMU* m);
+void RES7C(CPU* c, MMU* m);
+void RES7D(CPU* c, MMU* m);
+void RES7E(CPU* c, MMU* m);
+void RES7H(CPU* c, MMU* m);
+void RES7L(CPU* c, MMU* m);
+void RES7HL(CPU* c, MMU* m);
+void RES7A(CPU* c, MMU* m);
+
+void SET0B(CPU* c, MMU* m);
+void SET0C(CPU* c, MMU* m);
+void SET0D(CPU* c, MMU* m);
+void SET0E(CPU* c, MMU* m);
+void SET0H(CPU* c, MMU* m);
+void SET0L(CPU* c, MMU* m);
+void SET0HL(CPU* c, MMU* m);
+void SET0A(CPU* c, MMU* m);
+void SET1B(CPU* c, MMU* m);
+void SET1C(CPU* c, MMU* m);
+void SET1D(CPU* c, MMU* m);
+void SET1E(CPU* c, MMU* m);
+void SET1H(CPU* c, MMU* m);
+void SET1L(CPU* c, MMU* m);
+void SET1HL(CPU* c, MMU* m);
+void SET1A(CPU* c, MMU* m);
+
+void SET2B(CPU* c, MMU* m);
+void SET2C(CPU* c, MMU* m);
+void SET2D(CPU* c, MMU* m);
+void SET2E(CPU* c, MMU* m);
+void SET2H(CPU* c, MMU* m);
+void SET2L(CPU* c, MMU* m);
+void SET2HL(CPU* c, MMU* m);
+void SET2A(CPU* c, MMU* m);
+void SET3B(CPU* c, MMU* m);
+void SET3C(CPU* c, MMU* m);
+void SET3D(CPU* c, MMU* m);
+void SET3E(CPU* c, MMU* m);
+void SET3H(CPU* c, MMU* m);
+void SET3L(CPU* c, MMU* m);
+void SET3HL(CPU* c, MMU* m);
+void SET3A(CPU* c, MMU* m);
+
+void SET4B(CPU* c, MMU* m);
+void SET4C(CPU* c, MMU* m);
+void SET4D(CPU* c, MMU* m);
+void SET4E(CPU* c, MMU* m);
+void SET4H(CPU* c, MMU* m);
+void SET4L(CPU* c, MMU* m);
+void SET4HL(CPU* c, MMU* m);
+void SET4A(CPU* c, MMU* m);
+void SET5B(CPU* c, MMU* m);
+void SET5C(CPU* c, MMU* m);
+void SET5D(CPU* c, MMU* m);
+void SET5E(CPU* c, MMU* m);
+void SET5H(CPU* c, MMU* m);
+void SET5L(CPU* c, MMU* m);
+void SET5HL(CPU* c, MMU* m);
+void SET5A(CPU* c, MMU* m);
+
+void SET6B(CPU* c, MMU* m);
+void SET6C(CPU* c, MMU* m);
+void SET6D(CPU* c, MMU* m);
+void SET6E(CPU* c, MMU* m);
+void SET6H(CPU* c, MMU* m);
+void SET6L(CPU* c, MMU* m);
+void SET6HL(CPU* c, MMU* m);
+void SET6A(CPU* c, MMU* m);
+void SET7B(CPU* c, MMU* m);
+void SET7C(CPU* c, MMU* m);
+void SET7D(CPU* c, MMU* m);
+void SET7E(CPU* c, MMU* m);
+void SET7H(CPU* c, MMU* m);
+void SET7L(CPU* c, MMU* m);
+void SET7HL(CPU* c, MMU* m);
+void SET7A(CPU* c, MMU* m);
+
 OpCode OpCodes[256]={
     &NOP, &LDBCnn, &LDBCA, &INCBC, &INCB, &DECB, &LDBn, &RLCA, &LDnnSP, &ADDHLBC, &LDABC, &DECBC, &INCC, &DECC, &LDCn, &RRCA,
     &STOP, &LDDEnn, &LDDEA, &INCDE, &INCD, &DECD, &LDDn, &RLA, &JRn, &ADDHLDE, &LDADE, &DECDE, &INCE, &DECE, &LDEn, &RRA,
@@ -316,6 +590,25 @@ OpCode OpCodes[256]={
     &RETNC, &POPDE, &JPNCnn, 0, &CALLNCnn, &PUSHDE, &SUBAn, &RST10, &RETC, &RETI, &JPCnn, 0, &CALLCnn, 0, &SBCAn, &RST18, 
     &LDHnA, &POPHL, &LDHCA, 0, 0, &PUSHHL, &ANDn, &RST20, &ADDSPd, &JPHL, &LDnnA, 0, 0, 0, &XORn, &RST28, 
     &LDHAn, &POPAF, 0, &DI, 0, &PUSHAF, &ORn, &RST30, &LDHLSPd, &LDSPHL, &LDAnn, &EI, 0, 0, &CPn, &RST38
+};
+
+OpCode ExtOps[256]={
+	&RLCB, &RLCC, &RLCD, &RLCE, &RLCF, &RLCG, &RLCH, &RLCHL, &RLCAext, &RRCB, &RRCC, &RRCD, &RRCE, &RRCH, &RRCL, &RRCHL, &RRCAext,
+	&RLB, &RLC, &RLD, &RLE, &RLH, &RLL, &RLHL, &RLAext, &RRB, &RRC, &RRD, &RRE, &RRH, &RRL, &RRHL, &RRAext,
+	&SLAB, &SLAC, &SLAD, &SLAE, &SLAH, &SLAL, &SLAHL, &SLAA, &SRAB, &SRAC, &SRAD, &SRAE, &SRAH, &SRAL, &SRAHL, &SRAA,
+	&SWAPB, &SWAPC, &SWAPD, &SWAPE, &SWAPH, &SWAPL, &SWAPHL, &SWAPA, &SRLB, &SRLC, &SRLD, &SRLE, &SRLF, &SRLH, &SRLL, &SRLHL, &SRLA,
+	&BIT0B, &BIT0C, &BIT0D, &BIT0E, &BIT0H, &BIT0L, &BIT0HL, &BIT0A, &BIT1B, &BIT1C, &BIT1D, &BIT1E, &BIT1H, &BIT1L, &BIT1HL, &BIT1A,
+	&BIT2B, &BIT2C, &BIT2D, &BIT2E, &BIT2H, &BIT2L, &BIT2HL, &BIT2A, &BIT3B, &BIT3C, &BIT3D, &BIT3E, &BIT3H, &BIT3L, &BIT3HL, &BIT3A,
+	&BIT4B, &BIT4C, &BIT4D, &BIT4E, &BIT4H, &BIT4L, &BIT4HL, &BIT4A, &BIT5B, &BIT5C, &BIT5D, &BIT5E, &BIT5H, &BIT5L, &BIT5HL, &BIT5A,
+	&BIT6B, &BIT6C, &BIT6D, &BIT6E, &BIT6H, &BIT6L, &BIT6HL, &BIT6A, &BIT7B, &BIT7C, &BIT7D, &BIT7E, &BIT7H, &BIT7L, &BIT7HL, &BIT7A,
+	&RES0B, &RES0C, &RES0D, &RES0E, &RES0H, &RES0L, &RES0HL, &RES0A, &RES1B, &RES1C, &RES1D, &RES1E, &RES1H, &RES1L, &RES1HL, &RES1A,
+	&RES2B, &RES2C, &RES2D, &RES2E, &RES2H, &RES2L, &RES2HL, &RES2A, &RES3B, &RES3C, &RES3D, &RES3E, &RES3H, &RES3L, &RES3HL, &RES3A,
+	&RES4B, &RES4C, &RES4D, &RES4E, &RES4H, &RES4L, &RES4HL, &RES4A, &RES5B, &RES5C, &RES5D, &RES5E, &RES5H, &RES5L, &RES5HL, &RES5A,
+	&RES6B, &RES6C, &RES6D, &RES6E, &RES6H, &RES6L, &RES6HL, &RES6A, &RES7B, &RES7C, &RES7D, &RES7E, &RES7H, &RES7L, &RES7HL, &RES7A,
+	&SET0B, &SET0C, &SET0D, &SET0E, &SET0H, &SET0L, &SET0HL, &SET0A, &SET1B, &SET1C, &SET1D, &SET1E, &SET1H, &SET1L, &SET1HL, &SET1A,
+	&SET2B, &SET2C, &SET2D, &SET2E, &SET2H, &SET2L, &SET2HL, &SET2A, &SET3B, &SET3C, &SET3D, &SET3E, &SET3H, &SET3L, &SET3HL, &SET3A,
+	&SET4B, &SET4C, &SET4D, &SET4E, &SET4H, &SET4L, &SET4HL, &SET4A, &SET5B, &SET5C, &SET5D, &SET5E, &SET5H, &SET5L, &SET5HL, &SET5A,
+	&SET6B, &SET6C, &SET6D, &SET6E, &SET6H, &SET6L, &SET6HL, &SET6A, &SET7B, &SET7C, &SET7D, &SET7E, &SET7H, &SET7L, &SET7HL, &SET7A
 };
 
 #endif

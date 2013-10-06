@@ -1788,4 +1788,1036 @@ void RST38(CPU* c, MMU* m)
 	RST(c,m,0x38);
 }
 
+void RLCB(CPU* c, MMU* m)
+{
+}
+
+void RLCC(CPU* c, MMU* m)
+{
+}
+
+void RLCD(CPU* c, MMU* m)
+{
+}
+
+void RLCE(CPU* c, MMU* m)
+{
+}
+
+void RLCF(CPU* c, MMU* m)
+{
+}
+
+void RLCG(CPU* c, MMU* m)
+{
+}
+
+void RLCH(CPU* c, MMU* m)
+{
+}
+
+void RLCHL(CPU* c, MMU* m)
+{
+}
+
+void RLCAext(CPU* c, MMU* m)
+{
+}
+
+void RRCB(CPU* c, MMU* m)
+{
+}
+
+void RRCC(CPU* c, MMU* m)
+{
+}
+
+void RRCD(CPU* c, MMU* m)
+{
+}
+
+void RRCE(CPU* c, MMU* m)
+{
+}
+
+void RRCH(CPU* c, MMU* m)
+{
+}
+
+void RRCL(CPU* c, MMU* m)
+{
+}
+
+void RRCHL(CPU* c, MMU* m)
+{
+}
+
+void RRCAext(CPU* c, MMU* m)
+{
+}
+
+void RLB(CPU* c, MMU* m)
+{
+}
+
+void RLC(CPU* c, MMU* m)
+{
+}
+
+void RLD(CPU* c, MMU* m)
+{
+}
+
+void RLE(CPU* c, MMU* m)
+{
+}
+
+void RLH(CPU* c, MMU* m)
+{
+}
+
+void RLL(CPU* c, MMU* m)
+{
+}
+
+void RLHL(CPU* c, MMU* m)
+{
+}
+
+void RLAext(CPU* c, MMU* m)
+{
+}
+
+void RRB(CPU* c, MMU* m)
+{
+}
+
+void RRC(CPU* c, MMU* m)
+{
+}
+
+void RRD(CPU* c, MMU* m)
+{
+}
+
+void RRE(CPU* c, MMU* m)
+{
+}
+
+void RRH(CPU* c, MMU* m)
+{
+}
+
+void RRL(CPU* c, MMU* m)
+{
+}
+
+void RRHL(CPU* c, MMU* m)
+{
+}
+
+void RRAext(CPU* c, MMU* m)
+{
+}
+
+void SLAB(CPU* c, MMU* m)
+{
+}
+
+void SLAC(CPU* c, MMU* m)
+{
+}
+
+void SLAD(CPU* c, MMU* m)
+{
+}
+
+void SLAE(CPU* c, MMU* m)
+{
+}
+
+void SLAH(CPU* c, MMU* m)
+{
+}
+
+void SLAL(CPU* c, MMU* m)
+{
+}
+
+void SLAHL(CPU* c, MMU* m)
+{
+}
+
+void SLAA(CPU* c, MMU* m)
+{
+}
+
+void SRAB(CPU* c, MMU* m)
+{
+}
+
+void SRAC(CPU* c, MMU* m)
+{
+}
+
+void SRAD(CPU* c, MMU* m)
+{
+}
+
+void SRAE(CPU* c, MMU* m)
+{
+}
+
+void SRAH(CPU* c, MMU* m)
+{
+}
+
+void SRAL(CPU* c, MMU* m)
+{
+}
+
+void SRAHL(CPU* c, MMU* m)
+{
+}
+
+void SRAA(CPU* c, MMU* m)
+{
+}
+
+void SWAPB(CPU* c, MMU* m)
+{
+}
+
+void SWAPC(CPU* c, MMU* m)
+{
+}
+
+void SWAPD(CPU* c, MMU* m)
+{
+}
+
+void SWAPE(CPU* c, MMU* m)
+{
+}
+
+void SWAPH(CPU* c, MMU* m)
+{
+}
+
+void SWAPL(CPU* c, MMU* m)
+{
+}
+
+void SWAPHL(CPU* c, MMU* m)
+{
+}
+
+void SWAPA(CPU* c, MMU* m)
+{
+}
+
+void SRLB(CPU* c, MMU* m)
+{
+}
+
+void SRLC(CPU* c, MMU* m)
+{
+}
+
+void SRLD(CPU* c, MMU* m)
+{
+}
+
+void SRLE(CPU* c, MMU* m)
+{
+}
+
+void SRLF(CPU* c, MMU* m)
+{
+}
+
+void SRLH(CPU* c, MMU* m)
+{
+}
+
+void SRLL(CPU* c, MMU* m)
+{
+}
+
+void SRLHL(CPU* c, MMU* m)
+{
+}
+
+void SRLA(CPU* c, MMU* m)
+{
+}
+
+void BIT0B(CPU* c, MMU* m)
+{
+}
+
+void BIT0C(CPU* c, MMU* m)
+{
+}
+
+void BIT0D(CPU* c, MMU* m)
+{
+}
+
+void BIT0E(CPU* c, MMU* m)
+{
+}
+
+void BIT0H(CPU* c, MMU* m)
+{
+}
+
+void BIT0L(CPU* c, MMU* m)
+{
+}
+
+void BIT0HL(CPU* c, MMU* m)
+{
+}
+
+void BIT0A(CPU* c, MMU* m)
+{
+}
+
+void BIT1B(CPU* c, MMU* m)
+{
+}
+
+void BIT1C(CPU* c, MMU* m)
+{
+}
+
+void BIT1D(CPU* c, MMU* m)
+{
+}
+
+void BIT1E(CPU* c, MMU* m)
+{
+}
+
+void BIT1H(CPU* c, MMU* m)
+{
+}
+
+void BIT1L(CPU* c, MMU* m)
+{
+}
+
+void BIT1HL(CPU* c, MMU* m)
+{
+}
+
+void BIT1A(CPU* c, MMU* m)
+{
+}
+
+void BIT2B(CPU* c, MMU* m)
+{
+}
+
+void BIT2C(CPU* c, MMU* m)
+{
+}
+
+void BIT2D(CPU* c, MMU* m)
+{
+}
+
+void BIT2E(CPU* c, MMU* m)
+{
+}
+
+void BIT2H(CPU* c, MMU* m)
+{
+}
+
+void BIT2L(CPU* c, MMU* m)
+{
+}
+
+void BIT2HL(CPU* c, MMU* m)
+{
+}
+
+void BIT2A(CPU* c, MMU* m)
+{
+}
+
+void BIT3B(CPU* c, MMU* m)
+{
+}
+
+void BIT3C(CPU* c, MMU* m)
+{
+}
+
+void BIT3D(CPU* c, MMU* m)
+{
+}
+
+void BIT3E(CPU* c, MMU* m)
+{
+}
+
+void BIT3H(CPU* c, MMU* m)
+{
+}
+
+void BIT3L(CPU* c, MMU* m)
+{
+}
+
+void BIT3HL(CPU* c, MMU* m)
+{
+}
+
+void BIT3A(CPU* c, MMU* m)
+{
+}
+
+void BIT4B(CPU* c, MMU* m)
+{
+}
+
+void BIT4C(CPU* c, MMU* m)
+{
+}
+
+void BIT4D(CPU* c, MMU* m)
+{
+}
+
+void BIT4E(CPU* c, MMU* m)
+{
+}
+
+void BIT4H(CPU* c, MMU* m)
+{
+}
+
+void BIT4L(CPU* c, MMU* m)
+{
+}
+
+void BIT4HL(CPU* c, MMU* m)
+{
+}
+
+void BIT4A(CPU* c, MMU* m)
+{
+}
+
+void BIT5B(CPU* c, MMU* m)
+{
+}
+
+void BIT5C(CPU* c, MMU* m)
+{
+}
+
+void BIT5D(CPU* c, MMU* m)
+{
+}
+
+void BIT5E(CPU* c, MMU* m)
+{
+}
+
+void BIT5H(CPU* c, MMU* m)
+{
+}
+
+void BIT5L(CPU* c, MMU* m)
+{
+}
+
+void BIT5HL(CPU* c, MMU* m)
+{
+}
+
+void BIT5A(CPU* c, MMU* m)
+{
+}
+
+void BIT6B(CPU* c, MMU* m)
+{
+}
+
+void BIT6C(CPU* c, MMU* m)
+{
+}
+
+void BIT6D(CPU* c, MMU* m)
+{
+}
+
+void BIT6E(CPU* c, MMU* m)
+{
+}
+
+void BIT6H(CPU* c, MMU* m)
+{
+}
+
+void BIT6L(CPU* c, MMU* m)
+{
+}
+
+void BIT6HL(CPU* c, MMU* m)
+{
+}
+
+void BIT6A(CPU* c, MMU* m)
+{
+}
+
+void BIT7B(CPU* c, MMU* m)
+{
+}
+
+void BIT7C(CPU* c, MMU* m)
+{
+}
+
+void BIT7D(CPU* c, MMU* m)
+{
+}
+
+void BIT7E(CPU* c, MMU* m)
+{
+}
+
+void BIT7H(CPU* c, MMU* m)
+{
+}
+
+void BIT7L(CPU* c, MMU* m)
+{
+}
+
+void BIT7HL(CPU* c, MMU* m)
+{
+}
+
+void BIT7A(CPU* c, MMU* m)
+{
+}
+
+void RES0B(CPU* c, MMU* m)
+{
+}
+
+void RES0C(CPU* c, MMU* m)
+{
+}
+
+void RES0D(CPU* c, MMU* m)
+{
+}
+
+void RES0E(CPU* c, MMU* m)
+{
+}
+
+void RES0H(CPU* c, MMU* m)
+{
+}
+
+void RES0L(CPU* c, MMU* m)
+{
+}
+
+void RES0HL(CPU* c, MMU* m)
+{
+}
+
+void RES0A(CPU* c, MMU* m)
+{
+}
+
+void RES1B(CPU* c, MMU* m)
+{
+}
+
+void RES1C(CPU* c, MMU* m)
+{
+}
+
+void RES1D(CPU* c, MMU* m)
+{
+}
+
+void RES1E(CPU* c, MMU* m)
+{
+}
+
+void RES1H(CPU* c, MMU* m)
+{
+}
+
+void RES1L(CPU* c, MMU* m)
+{
+}
+
+void RES1HL(CPU* c, MMU* m)
+{
+}
+
+void RES1A(CPU* c, MMU* m)
+{
+}
+
+void RES2B(CPU* c, MMU* m)
+{
+}
+
+void RES2C(CPU* c, MMU* m)
+{
+}
+
+void RES2D(CPU* c, MMU* m)
+{
+}
+
+void RES2E(CPU* c, MMU* m)
+{
+}
+
+void RES2H(CPU* c, MMU* m)
+{
+}
+
+void RES2L(CPU* c, MMU* m)
+{
+}
+
+void RES2HL(CPU* c, MMU* m)
+{
+}
+
+void RES2A(CPU* c, MMU* m)
+{
+}
+
+void RES3B(CPU* c, MMU* m)
+{
+}
+
+void RES3C(CPU* c, MMU* m)
+{
+}
+
+void RES3D(CPU* c, MMU* m)
+{
+}
+
+void RES3E(CPU* c, MMU* m)
+{
+}
+
+void RES3H(CPU* c, MMU* m)
+{
+}
+
+void RES3L(CPU* c, MMU* m)
+{
+}
+
+void RES3HL(CPU* c, MMU* m)
+{
+}
+
+void RES3A(CPU* c, MMU* m)
+{
+}
+
+void RES4B(CPU* c, MMU* m)
+{
+}
+
+void RES4C(CPU* c, MMU* m)
+{
+}
+
+void RES4D(CPU* c, MMU* m)
+{
+}
+
+void RES4E(CPU* c, MMU* m)
+{
+}
+
+void RES4H(CPU* c, MMU* m)
+{
+}
+
+void RES4L(CPU* c, MMU* m)
+{
+}
+
+void RES4HL(CPU* c, MMU* m)
+{
+}
+
+void RES4A(CPU* c, MMU* m)
+{
+}
+
+void RES5B(CPU* c, MMU* m)
+{
+}
+
+void RES5C(CPU* c, MMU* m)
+{
+}
+
+void RES5D(CPU* c, MMU* m)
+{
+}
+
+void RES5E(CPU* c, MMU* m)
+{
+}
+
+void RES5H(CPU* c, MMU* m)
+{
+}
+
+void RES5L(CPU* c, MMU* m)
+{
+}
+
+void RES5HL(CPU* c, MMU* m)
+{
+}
+
+void RES5A(CPU* c, MMU* m)
+{
+}
+
+void RES6B(CPU* c, MMU* m)
+{
+}
+
+void RES6C(CPU* c, MMU* m)
+{
+}
+
+void RES6D(CPU* c, MMU* m)
+{
+}
+
+void RES6E(CPU* c, MMU* m)
+{
+}
+
+void RES6H(CPU* c, MMU* m)
+{
+}
+
+void RES6L(CPU* c, MMU* m)
+{
+}
+
+void RES6HL(CPU* c, MMU* m)
+{
+}
+
+void RES6A(CPU* c, MMU* m)
+{
+}
+
+void RES7B(CPU* c, MMU* m)
+{
+}
+
+void RES7C(CPU* c, MMU* m)
+{
+}
+
+void RES7D(CPU* c, MMU* m)
+{
+}
+
+void RES7E(CPU* c, MMU* m)
+{
+}
+
+void RES7H(CPU* c, MMU* m)
+{
+}
+
+void RES7L(CPU* c, MMU* m)
+{
+}
+
+void RES7HL(CPU* c, MMU* m)
+{
+}
+
+void RES7A(CPU* c, MMU* m)
+{
+}
+
+void SET0B(CPU* c, MMU* m)
+{
+}
+
+void SET0C(CPU* c, MMU* m)
+{
+}
+
+void SET0D(CPU* c, MMU* m)
+{
+}
+
+void SET0E(CPU* c, MMU* m)
+{
+}
+
+void SET0H(CPU* c, MMU* m)
+{
+}
+
+void SET0L(CPU* c, MMU* m)
+{
+}
+
+void SET0HL(CPU* c, MMU* m)
+{
+}
+
+void SET0A(CPU* c, MMU* m)
+{
+}
+
+void SET1B(CPU* c, MMU* m)
+{
+}
+
+void SET1C(CPU* c, MMU* m)
+{
+}
+
+void SET1D(CPU* c, MMU* m)
+{
+}
+
+void SET1E(CPU* c, MMU* m)
+{
+}
+
+void SET1H(CPU* c, MMU* m)
+{
+}
+
+void SET1L(CPU* c, MMU* m)
+{
+}
+
+void SET1HL(CPU* c, MMU* m)
+{
+}
+
+void SET1A(CPU* c, MMU* m)
+{
+}
+
+void SET2B(CPU* c, MMU* m)
+{
+}
+
+void SET2C(CPU* c, MMU* m)
+{
+}
+
+void SET2D(CPU* c, MMU* m)
+{
+}
+
+void SET2E(CPU* c, MMU* m)
+{
+}
+
+void SET2H(CPU* c, MMU* m)
+{
+}
+
+void SET2L(CPU* c, MMU* m)
+{
+}
+
+void SET2HL(CPU* c, MMU* m)
+{
+}
+
+void SET2A(CPU* c, MMU* m)
+{
+}
+
+void SET3B(CPU* c, MMU* m)
+{
+}
+
+void SET3C(CPU* c, MMU* m)
+{
+}
+
+void SET3D(CPU* c, MMU* m)
+{
+}
+
+void SET3E(CPU* c, MMU* m)
+{
+}
+
+void SET3H(CPU* c, MMU* m)
+{
+}
+
+void SET3L(CPU* c, MMU* m)
+{
+}
+
+void SET3HL(CPU* c, MMU* m)
+{
+}
+
+void SET3A(CPU* c, MMU* m)
+{
+}
+
+void SET4B(CPU* c, MMU* m)
+{
+}
+
+void SET4C(CPU* c, MMU* m)
+{
+}
+
+void SET4D(CPU* c, MMU* m)
+{
+}
+
+void SET4E(CPU* c, MMU* m)
+{
+}
+
+void SET4H(CPU* c, MMU* m)
+{
+}
+
+void SET4L(CPU* c, MMU* m)
+{
+}
+
+void SET4HL(CPU* c, MMU* m)
+{
+}
+
+void SET4A(CPU* c, MMU* m)
+{
+}
+
+void SET5B(CPU* c, MMU* m)
+{
+}
+
+void SET5C(CPU* c, MMU* m)
+{
+}
+
+void SET5D(CPU* c, MMU* m)
+{
+}
+
+void SET5E(CPU* c, MMU* m)
+{
+}
+
+void SET5H(CPU* c, MMU* m)
+{
+}
+
+void SET5L(CPU* c, MMU* m)
+{
+}
+
+void SET5HL(CPU* c, MMU* m)
+{
+}
+
+void SET5A(CPU* c, MMU* m)
+{
+}
+
+void SET6B(CPU* c, MMU* m)
+{
+}
+
+void SET6C(CPU* c, MMU* m)
+{
+}
+
+void SET6D(CPU* c, MMU* m)
+{
+}
+
+void SET6E(CPU* c, MMU* m)
+{
+}
+
+void SET6H(CPU* c, MMU* m)
+{
+}
+
+void SET6L(CPU* c, MMU* m)
+{
+}
+
+void SET6HL(CPU* c, MMU* m)
+{
+}
+
+void SET6A(CPU* c, MMU* m)
+{
+}
+
+void SET7B(CPU* c, MMU* m)
+{
+}
+
+void SET7C(CPU* c, MMU* m)
+{
+}
+
+void SET7D(CPU* c, MMU* m)
+{
+}
+
+void SET7E(CPU* c, MMU* m)
+{
+}
+
+void SET7H(CPU* c, MMU* m)
+{
+}
+
+void SET7L(CPU* c, MMU* m)
+{
+}
+
+void SET7HL(CPU* c, MMU* m)
+{
+}
+
+void SET7A(CPU* c, MMU* m)
+{
+}
+
 int main(){} // For compiling to check typos
