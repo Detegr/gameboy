@@ -2157,8 +2157,7 @@ int BITr(CPU*c, MMU* m, uint8_t b, uint8_t* reg)
 {
 	RESET_N(c->reg.F);
 	SET_H(c->reg.F);
-	// TODO: Make the bit check according to b
-	if(*reg & 0x01) SET_Z(c->reg.F);
+	if((*reg >> b) & 0x01) SET_Z(c->reg.F);
 	return 8;
 }
 
