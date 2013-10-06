@@ -303,9 +303,8 @@ void RLCB(CPU* c, MMU* m);
 void RLCC(CPU* c, MMU* m);
 void RLCD(CPU* c, MMU* m);
 void RLCE(CPU* c, MMU* m);
-void RLCF(CPU* c, MMU* m);
-void RLCG(CPU* c, MMU* m);
 void RLCH(CPU* c, MMU* m);
+void RLCL(CPU* c, MMU* m);
 void RLCHL(CPU* c, MMU* m);
 void RLCAext(CPU* c, MMU* m);
 void RRCB(CPU* c, MMU* m);
@@ -363,7 +362,6 @@ void SRLB(CPU* c, MMU* m);
 void SRLC(CPU* c, MMU* m);
 void SRLD(CPU* c, MMU* m);
 void SRLE(CPU* c, MMU* m);
-void SRLF(CPU* c, MMU* m);
 void SRLH(CPU* c, MMU* m);
 void SRLL(CPU* c, MMU* m);
 void SRLHL(CPU* c, MMU* m);
@@ -593,10 +591,10 @@ OpCode OpCodes[256]={
 };
 
 OpCode ExtOps[256]={
-	&RLCB, &RLCC, &RLCD, &RLCE, &RLCF, &RLCG, &RLCH, &RLCHL, &RLCAext, &RRCB, &RRCC, &RRCD, &RRCE, &RRCH, &RRCL, &RRCHL, &RRCAext,
+	&RLCB, &RLCC, &RLCD, &RLCE, &RLCH, &RLCL, &RLCHL, &RLCAext, &RRCB, &RRCC, &RRCD, &RRCE, &RRCH, &RRCL, &RRCHL, &RRCAext,
 	&RLB, &RLC, &RLD, &RLE, &RLH, &RLL, &RLHL, &RLAext, &RRB, &RRC, &RRD, &RRE, &RRH, &RRL, &RRHL, &RRAext,
 	&SLAB, &SLAC, &SLAD, &SLAE, &SLAH, &SLAL, &SLAHL, &SLAA, &SRAB, &SRAC, &SRAD, &SRAE, &SRAH, &SRAL, &SRAHL, &SRAA,
-	&SWAPB, &SWAPC, &SWAPD, &SWAPE, &SWAPH, &SWAPL, &SWAPHL, &SWAPA, &SRLB, &SRLC, &SRLD, &SRLE, &SRLF, &SRLH, &SRLL, &SRLHL, &SRLA,
+	&SWAPB, &SWAPC, &SWAPD, &SWAPE, &SWAPH, &SWAPL, &SWAPHL, &SWAPA, &SRLB, &SRLC, &SRLD, &SRLE, &SRLH, &SRLL, &SRLHL, &SRLA,
 	&BIT0B, &BIT0C, &BIT0D, &BIT0E, &BIT0H, &BIT0L, &BIT0HL, &BIT0A, &BIT1B, &BIT1C, &BIT1D, &BIT1E, &BIT1H, &BIT1L, &BIT1HL, &BIT1A,
 	&BIT2B, &BIT2C, &BIT2D, &BIT2E, &BIT2H, &BIT2L, &BIT2HL, &BIT2A, &BIT3B, &BIT3C, &BIT3D, &BIT3E, &BIT3H, &BIT3L, &BIT3HL, &BIT3A,
 	&BIT4B, &BIT4C, &BIT4D, &BIT4E, &BIT4H, &BIT4L, &BIT4HL, &BIT4A, &BIT5B, &BIT5C, &BIT5D, &BIT5E, &BIT5H, &BIT5L, &BIT5HL, &BIT5A,

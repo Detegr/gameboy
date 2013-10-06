@@ -150,21 +150,26 @@ void LDBn(CPU* c, MMU* m)
 	CYCLES(8);
 }
 
-void RLCA(CPU* c, MMU* m)
+int RLCr(CPU* c, MMU* m, uint8_t* reg)
 {
 	/* Rotate register left */
 	c->reg.F &= ~CARRY; // Reset carry flag
-	if(c->reg.A & 0x80)
+	if(*reg & 0x80)
 	{
 		c->reg.F |= CARRY; // Contains old bit 7 data
 	}
-	c->reg.A <<= 1;
+	*reg <<= 1;
 	if(c->reg.F & CARRY)
 	{
-		c->reg.A |= 0x01;
+		*reg |= 0x01;
 	}
-	if(!c->reg.A) c->reg.F |= ZERO;
-	CYCLES(4);
+	if(!*reg) c->reg.F |= ZERO;
+	return 4;
+}
+
+void RLCA(CPU* c, MMU* m)
+{
+	CYCLES(RLCr(c,m,&c->reg.A));
 }
 
 void LDnnSP(CPU* c, MMU* m)
@@ -1697,7 +1702,7 @@ void LDnnA(CPU* c, MMU* m)
 	uint8_t lsb=m[c->PC++];
 	uint8_t msb=m[c->PC++];
 	uint16_t imm=WORD(msb,lsb);
-	m[imm]=uint16_t(c->reg.A);
+	m[imm]=c->reg.A;
 	CYCLES(16);
 }
 
@@ -1752,8 +1757,8 @@ void LDHLSPd(CPU* c, MMU* m)
 	RESET_Z(c->reg.F);
 	RESET_N(c->reg.F);
 	uint16_t val=c->SP+m[c->PC++];
-	c->reg.H=val&0xFF00;
-	c->reg.L=val>>8;
+	c->reg.H=val>>8;
+	c->reg.L=val&0x00FF;
 	CYCLES(12);
 }
 
@@ -1790,38 +1795,50 @@ void RST38(CPU* c, MMU* m)
 
 void RLCB(CPU* c, MMU* m)
 {
+	RLCr(c,m,&c->reg.B);
+	CYCLES(8);
 }
 
 void RLCC(CPU* c, MMU* m)
 {
+	RLCr(c,m,&c->reg.C);
+	CYCLES(8);
 }
 
 void RLCD(CPU* c, MMU* m)
 {
+	RLCr(c,m,&c->reg.D);
+	CYCLES(8);
 }
 
 void RLCE(CPU* c, MMU* m)
 {
-}
-
-void RLCF(CPU* c, MMU* m)
-{
-}
-
-void RLCG(CPU* c, MMU* m)
-{
+	RLCr(c,m,&c->reg.E);
+	CYCLES(8);
 }
 
 void RLCH(CPU* c, MMU* m)
 {
+	RLCr(c,m,&c->reg.H);
+	CYCLES(8);
+}
+
+void RLCL(CPU* c, MMU* m)
+{
+	RLCr(c,m,&c->reg.L);
+	CYCLES(8);
 }
 
 void RLCHL(CPU* c, MMU* m)
 {
+	RLCr(c,m,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void RLCAext(CPU* c, MMU* m)
 {
+	RLCA(c,m);
+	CYCLES(8);
 }
 
 void RRCB(CPU* c, MMU* m)
