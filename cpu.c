@@ -1,5 +1,7 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "cpu.h"
-#include <assert.h>
 
 #define CYCLES(X) (c->c+=X)
 #define WORD(X,Y) ((X<<8)|Y)
@@ -16,14 +18,19 @@
 #define CHECK_CARRY_SUB(v,tmp) (v >= tmp)
 #define CHECK_HALFCARRY(v, tmp) ((v & 0xF0) != (tmp & 0xF0))
 
+#include <assert.h>
+
 uint8_t inc(uint8_t* reg, uint8_t* flags)
 {
 	(*reg)++;
+	RESET_N(*flags);
+	RESET_H(*flags);
 	if(!(*reg & 0x0F)) // Lower nibble overflown
 	{
 		*flags |= HALFCARRY;
 	}
-	if(!*reg) *flags |= ZERO;
+	if(!*reg) SET_Z(*flags);
+	else RESET_Z(*flags);
 	*flags &= ~SUBTRACT; /* Reset N flag */
 	return 4;
 }
@@ -31,13 +38,15 @@ uint8_t inc(uint8_t* reg, uint8_t* flags)
 uint8_t dec(uint8_t* reg, uint8_t* flags)
 {
 	(*reg)--;
-	*flags |= SUBTRACT;
+	SET_N(*flags);
+	RESET_H(*flags);
 	/* H - Set if no borrow from bit 4, aka no overflow on lower nibble */
 	if((*reg & 0x0F) != 0x0F) // Lower nibble not overflown
 	{
 		*flags |= HALFCARRY;
 	}
-	if(!*reg) *flags |= ZERO;
+	if(!*reg) SET_Z(*flags);
+	else RESET_Z(*flags);
 	return 4;
 }
 uint8_t LDrr_mm(CPU* c, MMU* m, uint8_t* regA, uint8_t* regB)
@@ -54,6 +63,8 @@ uint8_t ADDrr_rr(CPU* c, uint8_t* ra1, uint8_t* ra2, uint8_t* rb1, uint8_t* rb2)
 	c->reg.F &= ~SUBTRACT;
 	uint16_t a1a2 = WORD(*ra1, *ra2);
 	uint16_t result = a1a2 + WORD(*rb1, *rb2);
+	RESET_H(c->reg.F);
+	RESET_C(c->reg.F);
 	if(result < a1a2) c->reg.F |= CARRY|HALFCARRY;
 	else if((result & 0xF000) != (a1a2 & 0xF000))
 	{// Carry from bit 11
@@ -64,6 +75,11 @@ uint8_t ADDrr_rr(CPU* c, uint8_t* ra1, uint8_t* ra2, uint8_t* rb1, uint8_t* rb2)
 
 uint8_t ADDr_r(CPU* c, uint8_t* reg, uint8_t* reg2)
 {
+	RESET_Z(c->reg.F);
+	RESET_N(c->reg.F);
+	RESET_H(c->reg.F);
+	RESET_C(c->reg.F);
+
 	uint8_t tmp=*reg;
 	if(*reg2)
 	{
@@ -79,7 +95,6 @@ uint8_t ADDr_r(CPU* c, uint8_t* reg, uint8_t* reg2)
 		}
 	}
 	if(!*reg) c->reg.F |= ZERO;
-	c->reg.F &= ~SUBTRACT;
 	return 4;
 }
 
@@ -93,6 +108,11 @@ uint8_t ADCr_r(CPU* c, uint8_t* reg, uint8_t* reg2)
 
 uint8_t SUBr_r(CPU* c, uint8_t* reg, uint8_t* reg2)
 {
+	RESET_Z(c->reg.F);
+	SET_N(c->reg.F);
+	RESET_H(c->reg.F);
+	RESET_C(c->reg.F);
+
 	uint8_t tmp=*reg;
 	*reg -= *reg2;
 	if(*reg2)
@@ -108,7 +128,6 @@ uint8_t SUBr_r(CPU* c, uint8_t* reg, uint8_t* reg2)
 		}
 	}
 	if(!*reg) c->reg.F |= ZERO;
-	c->reg.F |= SUBTRACT;
 	return 4;
 }
 
@@ -166,6 +185,7 @@ int RLCr(CPU* c, MMU* m, uint8_t* reg)
 		*reg |= 0x01;
 	}
 	if(!*reg) c->reg.F |= ZERO;
+	else RESET_Z(c->reg.F);
 	return 4;
 }
 
@@ -232,6 +252,7 @@ int RRCr(CPU* c, MMU* m, uint8_t* reg)
 		*reg |= 0x80;
 	}
 	if(!*reg) c->reg.F |= ZERO;
+	else RESET_Z(c->reg.F);
 	return 4;
 }
 
@@ -296,6 +317,7 @@ int RLr(CPU* c, MMU* m, uint8_t* reg)
 		*reg |= 0x01;
 	}
 	if(!*reg) c->reg.F |= ZERO;
+	else RESET_Z(c->reg.F);
 	return 4;
 }
 
@@ -306,7 +328,8 @@ void RLA(CPU* c, MMU* m)
 
 void JRn(CPU* c, MMU* m)
 {
-	c->PC+=m[c->PC];
+	int8_t imm=m[c->PC++];
+	c->PC+=imm;
 	CYCLES(8);
 }
 
@@ -358,6 +381,7 @@ int RRr(CPU* c, MMU*m, uint8_t* reg)
 		*reg |= 0x80;
 	}
 	if(!*reg) c->reg.F |= ZERO;
+	else RESET_Z(c->reg.F);
 	return 4;
 }
 
@@ -374,6 +398,7 @@ void JRNZn(CPU* c, MMU* m)
 	{
 		JRn(c,m); /* CYCLES(8) */
 	}
+	else CYCLES(8);
 }
 
 void LDHLnn(CPU* c, MMU* m)
@@ -506,6 +531,7 @@ void DAA(CPU* c, MMU* m)
 	result = ((h << 4)|l)+addition;
 	c->reg.A=result;
 	if(!c->reg.A) c->reg.F |= ZERO;
+	else RESET_Z(c->reg.F);
 
 	CYCLES(4);
 }
@@ -1189,6 +1215,8 @@ void SUBAA(CPU* c, MMU* m)
 uint8_t SBCr_r(CPU* c, uint8_t* reg1, uint8_t* reg2)
 {// Subtract n + carry flag from A
 	SET_N(c->reg.F);
+	RESET_H(c->reg.F);
+	RESET_C(c->reg.F);
 	if(*reg2)
 	{
 		uint8_t tmp=*reg1;
@@ -1204,6 +1232,7 @@ uint8_t SBCr_r(CPU* c, uint8_t* reg1, uint8_t* reg2)
 		}
 	}
 	if(*reg1 == 0x0) SET_Z(c->reg.F);
+	else RESET_Z(c->reg.F);
 	return 4;
 }
 
@@ -1259,6 +1288,7 @@ int ANDr_r(CPU* c, uint8_t* reg1, uint8_t* reg2)
 	*reg1 = *reg1 & *reg2;
 
 	if(*reg1 == 0x0) SET_Z(c->reg.F);
+	else RESET_Z(c->reg.F);
 
 	return 4;
 }
@@ -1313,6 +1343,7 @@ int XORr_r(CPU* c, uint8_t* reg1, uint8_t* reg2)
 	*reg1 = *reg1 ^ *reg2;
 
 	if(*reg1 == 0x0) SET_Z(c->reg.F);
+	else RESET_Z(c->reg.F);
 
 	return 4;
 }
@@ -1369,6 +1400,7 @@ int ORr_r(CPU* c, uint8_t* reg1, uint8_t* reg2)
 	*reg1 = *reg1 | *reg2;
 
 	if(*reg1 == 0x0) SET_Z(c->reg.F);
+	else RESET_Z(c->reg.F);
 
 	return 4;
 }
@@ -1420,8 +1452,9 @@ int CPr_r(CPU* c, uint8_t* reg1, uint8_t* reg2)
 	if(CHECK_HALFCARRY(*reg1, *reg2))
 	{
 		SET_H(c->reg.F);
-	}
+	} else RESET_H(c->reg.F);
 	if(*reg1 < *reg2) SET_C(c->reg.F);
+	else RESET_C(c->reg.F);
 	return 4;
 }
 
@@ -1528,7 +1561,8 @@ void ADDAn(CPU* c, MMU* m)
 
 void RST(CPU* c, MMU* m, uint8_t val)
 {
-	m[--c->SP]=c->PC;
+	m[--c->SP]=c->PC&0xF;
+	m[--c->SP]=c->PC>>8;
 	c->PC=val;
 	CYCLES(32);
 }
@@ -1546,7 +1580,7 @@ void RETZ(CPU* c, MMU* m)
 
 void RET(CPU* c, MMU* m)
 {// Pop two bytes from stack & jump to that address
-	c->PC=c->SP;
+	c->PC=WORD(m[c->SP+1], m[c->SP]);
 	c->SP+=2;
 	CYCLES(8);
 }
@@ -1559,6 +1593,7 @@ void JPZnn(CPU* c, MMU* m)
 
 void Extops(CPU* c, MMU* m)
 {
+	ExtOps[m[c->PC++]](c,m);
 }
 
 void CALLZnn(CPU* c, MMU* m)
@@ -1703,8 +1738,9 @@ void ADDSPd(CPU* c, MMU* m)
 {
 	RESET_Z(c->reg.F);
 	RESET_N(c->reg.F);
-	uint8_t tmp=0;
-	ADDrr_rr(c, (uint8_t*)&c->SP, (uint8_t*)(&c->SP)+1, &tmp, &m[c->PC++]);
+	int8_t imm=m[c->PC++];
+	c->SP+=imm;
+	// H and C flags according to operation???
 	CYCLES(16);
 }
 
@@ -1773,9 +1809,11 @@ void LDHLSPd(CPU* c, MMU* m)
 	// TODO: Check endianess
 	RESET_Z(c->reg.F);
 	RESET_N(c->reg.F);
-	uint16_t val=c->SP+m[c->PC++];
+	int8_t imm=m[c->PC++];
+	uint16_t val=c->SP+imm;
 	c->reg.H=val>>8;
 	c->reg.L=val&0x00FF;
+	// H and C flags according to operation???
 	CYCLES(12);
 }
 
@@ -2002,68 +2040,113 @@ void RRAext(CPU* c, MMU* m)
 	CYCLES(8);
 }
 
+int SLAr(CPU* c, MMU* m, uint8_t* reg)
+{
+	RESET_N(c->reg.F);
+	RESET_H(c->reg.F);
+	if(*reg&0x80) SET_C(c->reg.F);
+	else RESET_C(c->reg.F);
+	*reg <<= 1;
+	if(!*reg) SET_Z(c->reg.F);
+	else RESET_Z(c->reg.F);
+	return 8;
+}
+
 void SLAB(CPU* c, MMU* m)
 {
+	CYCLES(SLAr(c,m,&c->reg.B));
 }
 
 void SLAC(CPU* c, MMU* m)
 {
+	CYCLES(SLAr(c,m,&c->reg.C));
 }
 
 void SLAD(CPU* c, MMU* m)
 {
+	CYCLES(SLAr(c,m,&c->reg.D));
 }
 
 void SLAE(CPU* c, MMU* m)
 {
+	CYCLES(SLAr(c,m,&c->reg.E));
 }
 
 void SLAH(CPU* c, MMU* m)
 {
+	CYCLES(SLAr(c,m,&c->reg.H));
 }
 
 void SLAL(CPU* c, MMU* m)
 {
+	CYCLES(SLAr(c,m,&c->reg.L));
 }
 
 void SLAHL(CPU* c, MMU* m)
 {
+	SLAr(c,m,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void SLAA(CPU* c, MMU* m)
 {
+	CYCLES(SLAr(c,m,&c->reg.A));
+}
+
+int SRAr(CPU* c, MMU* m, uint8_t* reg)
+{
+	RESET_N(c->reg.F);
+	RESET_H(c->reg.F);
+	uint8_t msb=0;
+	if(*reg&0x80) msb=0x80;
+	if(*reg&0x01) SET_C(c->reg.F);
+	else RESET_C(c->reg.F);
+	*reg >>= 1;
+	*reg |= msb;
+	if(!*reg) SET_Z(c->reg.F);
+	else RESET_Z(c->reg.F);
+	return 8;
 }
 
 void SRAB(CPU* c, MMU* m)
 {
+	CYCLES(SRAr(c,m,&c->reg.B));
 }
 
 void SRAC(CPU* c, MMU* m)
 {
+	CYCLES(SRAr(c,m,&c->reg.C));
 }
 
 void SRAD(CPU* c, MMU* m)
 {
+	CYCLES(SRAr(c,m,&c->reg.D));
 }
 
 void SRAE(CPU* c, MMU* m)
 {
+	CYCLES(SRAr(c,m,&c->reg.E));
 }
 
 void SRAH(CPU* c, MMU* m)
 {
+	CYCLES(SRAr(c,m,&c->reg.H));
 }
 
 void SRAL(CPU* c, MMU* m)
 {
+	CYCLES(SRAr(c,m,&c->reg.L));
 }
 
 void SRAHL(CPU* c, MMU* m)
 {
+	SRAr(c,m,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void SRAA(CPU* c, MMU* m)
 {
+	CYCLES(SRAr(c,m,&c->reg.A));
 }
 
 int SWAPr(CPU* c, MMU* m, uint8_t* reg)
@@ -2075,6 +2158,7 @@ int SWAPr(CPU* c, MMU* m, uint8_t* reg)
 	*reg <<= 4;
 	*reg |= uptmp;
 	if(!*reg) SET_Z(c->reg.F);
+	else RESET_Z(c->reg.F);
 	return 8;
 }
 
@@ -2119,47 +2203,65 @@ void SWAPA(CPU* c, MMU* m)
 	CYCLES(SWAPr(c,m,&c->reg.A));
 }
 
+int SRLr(CPU* c, MMU* m, uint8_t* reg)
+{
+	RESET_N(c->reg.F);
+	RESET_H(c->reg.F);
+	if(*reg&0x01) SET_C(c->reg.F);
+	else RESET_C(c->reg.F);
+	*reg >>= 1;
+	if(!*reg) SET_Z(c->reg.F);
+	else RESET_Z(c->reg.F);
+	return 8;
+}
+
 void SRLB(CPU* c, MMU* m)
 {
+	CYCLES(SRLr(c,m,&c->reg.B));
 }
 
 void SRLC(CPU* c, MMU* m)
 {
+	CYCLES(SRLr(c,m,&c->reg.C));
 }
 
 void SRLD(CPU* c, MMU* m)
 {
+	CYCLES(SRLr(c,m,&c->reg.D));
 }
 
 void SRLE(CPU* c, MMU* m)
 {
-}
-
-void SRLF(CPU* c, MMU* m)
-{
+	CYCLES(SRLr(c,m,&c->reg.E));
 }
 
 void SRLH(CPU* c, MMU* m)
 {
+	CYCLES(SRLr(c,m,&c->reg.H));
 }
 
 void SRLL(CPU* c, MMU* m)
 {
+	CYCLES(SRLr(c,m,&c->reg.L));
 }
 
 void SRLHL(CPU* c, MMU* m)
 {
+	SRLr(c,m,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void SRLA(CPU* c, MMU* m)
 {
+	CYCLES(SRLr(c,m,&c->reg.A));
 }
 
 int BITr(CPU*c, MMU* m, uint8_t b, uint8_t* reg)
 {
 	RESET_N(c->reg.F);
 	SET_H(c->reg.F);
-	if((*reg >> b) & 0x01) SET_Z(c->reg.F);
+	if((*reg >> b) & 0x0) SET_Z(c->reg.F);
+	else RESET_Z(c->reg.F);
 	return 8;
 }
 
@@ -3181,4 +3283,66 @@ void SET7A(CPU* c, MMU* m)
 	CYCLES(SETr(c,m,7,&c->reg.A));
 }
 
-int main(){} // For compiling to check typos
+void execute_next(CPU* c, MMU* m)
+{
+	OpCodes[m[c->PC++]](c,m);
+}
+
+void reset(CPU* c)
+{
+	c->reg.A=c->reg.B=c->reg.C=c->reg.D=c->reg.E=c->reg.H=c->reg.L=c->reg.F=c->PC=0;
+	c->SP=0xFFFE;
+}
+
+static void write_bios(MMU* m)
+{
+	int i;
+	for(i=0; i<256; ++i)
+	{
+		m[i]=Bios[i];
+	}
+}
+
+static void run_bios(CPU* c, MMU* m)
+{
+	while(c->PC!=256) execute_next(c,m);
+	memset(m, 0, 256); // Clear bios from memory
+}
+
+static void load_rom(char* path, MMU* m)
+{
+	FILE* f=fopen(path, "r");
+	if(!f)
+	{
+		fprintf(stderr, "Failed to open rom: %s\n", path);
+		exit(EXIT_FAILURE);
+	}
+	unsigned b=0;
+	while(fread(&m[b], 1, 1, f) > 0) ++b;
+	fclose(f);
+}
+
+void start(CPU* c, char* rompath)
+{
+	MMU* m=c->MMU;
+	reset(c);
+	write_bios(m);
+	run_bios(c,m);
+	load_rom(rompath, m);
+	while(1)
+	{
+		execute_next(c,m);
+	}
+}
+
+int main(int argc, char** argv)
+{
+	if(argc<2)
+	{
+		printf("Please specify a rom file\n");
+		exit(EXIT_SUCCESS);
+	}
+	CPU cpu;
+	start(&cpu, argv[1]);
+	return 0;
+}
