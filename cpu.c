@@ -1,4 +1,6 @@
 #include "cpu.h"
+#include <assert.h>
+
 #define CYCLES(X) (c->c+=X)
 #define WORD(X,Y) ((X<<8)|Y)
 #define SET_N(val) (val |= SUBTRACT)
@@ -2489,516 +2491,694 @@ void BIT7A(CPU* c, MMU* m)
 	CYCLES(BITr(c,m,7,&c->reg.A));
 }
 
+int RESr(CPU* c, MMU* m, uint8_t b, uint8_t* reg)
+{
+	assert(b<=7);
+	switch(b)
+	{
+		case 0: *reg&=0xFE;break;
+		case 1: *reg&=0xFD;break;
+		case 2: *reg&=0xFB;break;
+		case 3: *reg&=0xF7;break;
+		case 4: *reg&=0xEF;break;
+		case 5: *reg&=0xDF;break;
+		case 6: *reg&=0xBF;break;
+		case 7: *reg&=0x7F;break;
+	}
+	return 8;
+}
+
 void RES0B(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,0,&c->reg.B));
 }
 
 void RES0C(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,0,&c->reg.C));
 }
 
 void RES0D(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,0,&c->reg.D));
 }
 
 void RES0E(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,0,&c->reg.E));
 }
 
 void RES0H(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,0,&c->reg.H));
 }
 
 void RES0L(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,0,&c->reg.L));
 }
 
 void RES0HL(CPU* c, MMU* m)
 {
+	RESr(c,m,0,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void RES0A(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,0,&c->reg.A));
 }
 
 void RES1B(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,1,&c->reg.B));
 }
 
 void RES1C(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,1,&c->reg.C));
 }
 
 void RES1D(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,1,&c->reg.D));
 }
 
 void RES1E(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,1,&c->reg.E));
 }
 
 void RES1H(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,1,&c->reg.H));
 }
 
 void RES1L(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,1,&c->reg.L));
 }
 
 void RES1HL(CPU* c, MMU* m)
 {
+	RESr(c,m,1,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void RES1A(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,1,&c->reg.A));
 }
 
 void RES2B(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,2,&c->reg.B));
 }
 
 void RES2C(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,2,&c->reg.C));
 }
 
 void RES2D(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,2,&c->reg.D));
 }
 
 void RES2E(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,2,&c->reg.E));
 }
 
 void RES2H(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,2,&c->reg.H));
 }
 
 void RES2L(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,2,&c->reg.L));
 }
 
 void RES2HL(CPU* c, MMU* m)
 {
+	RESr(c,m,2,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void RES2A(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,2,&c->reg.A));
 }
 
 void RES3B(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,3,&c->reg.B));
 }
 
 void RES3C(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,3,&c->reg.C));
 }
 
 void RES3D(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,3,&c->reg.D));
 }
 
 void RES3E(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,3,&c->reg.E));
 }
 
 void RES3H(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,3,&c->reg.H));
 }
 
 void RES3L(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,3,&c->reg.L));
 }
 
 void RES3HL(CPU* c, MMU* m)
 {
+	RESr(c,m,3,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void RES3A(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,3,&c->reg.A));
 }
 
 void RES4B(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,4,&c->reg.B));
 }
 
 void RES4C(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,4,&c->reg.C));
 }
 
 void RES4D(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,4,&c->reg.D));
 }
 
 void RES4E(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,4,&c->reg.E));
 }
 
 void RES4H(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,4,&c->reg.H));
 }
 
 void RES4L(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,4,&c->reg.L));
 }
 
 void RES4HL(CPU* c, MMU* m)
 {
+	RESr(c,m,4,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void RES4A(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,4,&c->reg.A));
 }
 
 void RES5B(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,5,&c->reg.B));
 }
 
 void RES5C(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,5,&c->reg.C));
 }
 
 void RES5D(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,5,&c->reg.D));
 }
 
 void RES5E(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,5,&c->reg.E));
 }
 
 void RES5H(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,5,&c->reg.H));
 }
 
 void RES5L(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,5,&c->reg.L));
 }
 
 void RES5HL(CPU* c, MMU* m)
 {
+	RESr(c,m,5,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void RES5A(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,5,&c->reg.A));
 }
 
 void RES6B(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,6,&c->reg.B));
 }
 
 void RES6C(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,6,&c->reg.C));
 }
 
 void RES6D(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,6,&c->reg.D));
 }
 
 void RES6E(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,6,&c->reg.E));
 }
 
 void RES6H(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,6,&c->reg.H));
 }
 
 void RES6L(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,6,&c->reg.L));
 }
 
 void RES6HL(CPU* c, MMU* m)
 {
+	RESr(c,m,6,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void RES6A(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,6,&c->reg.A));
 }
 
 void RES7B(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,7,&c->reg.B));
 }
 
 void RES7C(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,7,&c->reg.C));
 }
 
 void RES7D(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,7,&c->reg.D));
 }
 
 void RES7E(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,7,&c->reg.E));
 }
 
 void RES7H(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,7,&c->reg.H));
 }
 
 void RES7L(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,7,&c->reg.L));
 }
 
 void RES7HL(CPU* c, MMU* m)
 {
+	RESr(c,m,7,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void RES7A(CPU* c, MMU* m)
 {
+	CYCLES(RESr(c,m,7,&c->reg.A));
+}
+
+int SETr(CPU* c, MMU* m, uint8_t b, uint8_t* reg)
+{
+	assert(b<=7);
+	switch(b)
+	{
+		case 0: *reg|=0x01;break;
+		case 1: *reg|=0x02;break;
+		case 2: *reg|=0x04;break;
+		case 3: *reg|=0x08;break;
+		case 4: *reg|=0x10;break;
+		case 5: *reg|=0x20;break;
+		case 6: *reg|=0x40;break;
+		case 7: *reg|=0x80;break;
+	}
+	return 8;
 }
 
 void SET0B(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,0,&c->reg.B));
 }
 
 void SET0C(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,0,&c->reg.C));
 }
 
 void SET0D(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,0,&c->reg.D));
 }
 
 void SET0E(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,0,&c->reg.E));
 }
 
 void SET0H(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,0,&c->reg.H));
 }
 
 void SET0L(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,0,&c->reg.L));
 }
 
 void SET0HL(CPU* c, MMU* m)
 {
+	SETr(c,m,0,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void SET0A(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,0,&c->reg.A));
 }
 
 void SET1B(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,1,&c->reg.B));
 }
 
 void SET1C(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,1,&c->reg.C));
 }
 
 void SET1D(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,1,&c->reg.D));
 }
 
 void SET1E(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,1,&c->reg.E));
 }
 
 void SET1H(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,1,&c->reg.H));
 }
 
 void SET1L(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,1,&c->reg.L));
 }
 
 void SET1HL(CPU* c, MMU* m)
 {
+	SETr(c,m,1,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void SET1A(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,1,&c->reg.A));
 }
 
 void SET2B(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,2,&c->reg.B));
 }
 
 void SET2C(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,2,&c->reg.C));
 }
 
 void SET2D(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,2,&c->reg.D));
 }
 
 void SET2E(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,2,&c->reg.E));
 }
 
 void SET2H(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,2,&c->reg.H));
 }
 
 void SET2L(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,2,&c->reg.L));
 }
 
 void SET2HL(CPU* c, MMU* m)
 {
+	SETr(c,m,2,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void SET2A(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,2,&c->reg.A));
 }
 
 void SET3B(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,3,&c->reg.B));
 }
 
 void SET3C(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,3,&c->reg.C));
 }
 
 void SET3D(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,3,&c->reg.D));
 }
 
 void SET3E(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,3,&c->reg.E));
 }
 
 void SET3H(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,3,&c->reg.H));
 }
 
 void SET3L(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,3,&c->reg.L));
 }
 
 void SET3HL(CPU* c, MMU* m)
 {
+	SETr(c,m,3,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void SET3A(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,3,&c->reg.A));
 }
 
 void SET4B(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,4,&c->reg.B));
 }
 
 void SET4C(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,4,&c->reg.C));
 }
 
 void SET4D(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,4,&c->reg.D));
 }
 
 void SET4E(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,4,&c->reg.E));
 }
 
 void SET4H(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,4,&c->reg.H));
 }
 
 void SET4L(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,4,&c->reg.L));
 }
 
 void SET4HL(CPU* c, MMU* m)
 {
+	SETr(c,m,4,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void SET4A(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,4,&c->reg.A));
 }
 
 void SET5B(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,5,&c->reg.B));
 }
 
 void SET5C(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,5,&c->reg.C));
 }
 
 void SET5D(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,5,&c->reg.D));
 }
 
 void SET5E(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,5,&c->reg.E));
 }
 
 void SET5H(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,5,&c->reg.H));
 }
 
 void SET5L(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,5,&c->reg.L));
 }
 
 void SET5HL(CPU* c, MMU* m)
 {
+	SETr(c,m,5,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void SET5A(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,5,&c->reg.A));
 }
 
 void SET6B(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,6,&c->reg.B));
 }
 
 void SET6C(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,6,&c->reg.C));
 }
 
 void SET6D(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,6,&c->reg.D));
 }
 
 void SET6E(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,6,&c->reg.E));
 }
 
 void SET6H(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,6,&c->reg.H));
 }
 
 void SET6L(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,6,&c->reg.L));
 }
 
 void SET6HL(CPU* c, MMU* m)
 {
+	SETr(c,m,6,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void SET6A(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,6,&c->reg.A));
 }
 
 void SET7B(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,7,&c->reg.B));
 }
 
 void SET7C(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,7,&c->reg.C));
 }
 
 void SET7D(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,7,&c->reg.D));
 }
 
 void SET7E(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,7,&c->reg.E));
 }
 
 void SET7H(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,7,&c->reg.H));
 }
 
 void SET7L(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,7,&c->reg.L));
 }
 
 void SET7HL(CPU* c, MMU* m)
 {
+	SETr(c,m,7,&m[WORD(c->reg.H, c->reg.L)]);
+	CYCLES(16);
 }
 
 void SET7A(CPU* c, MMU* m)
 {
+	CYCLES(SETr(c,m,7,&c->reg.A));
 }
 
 int main(){} // For compiling to check typos
