@@ -306,17 +306,17 @@ int RLr(CPU* c, MMU* m, uint8_t* reg)
 {
 	/* Rotate register left through carry flag */
 	uint8_t old_carry = c->reg.F & CARRY;
-	c->reg.F &= ~CARRY; // Reset carry flag
-	if(c->reg.A & 0x80)
+	RESET_C(c->reg.F);
+	if(*reg & 0x80)
 	{
-		c->reg.F |= CARRY; // Contains old bit 7 data
+		SET_C(c->reg.F); // Contains old bit 7 data
 	}
 	*reg <<= 1;
 	if(old_carry)
 	{
 		*reg |= 0x01;
 	}
-	if(!*reg) c->reg.F |= ZERO;
+	if(!*reg) SET_Z(c->reg.F);
 	else RESET_Z(c->reg.F);
 	return 4;
 }
@@ -370,10 +370,10 @@ int RRr(CPU* c, MMU*m, uint8_t* reg)
 {
 	/* Rotate register right through carry flag */
 	uint8_t old_carry = c->reg.F & CARRY;
-	c->reg.F &= ~CARRY; // Reset carry flag
+	RESET_C(c->reg.F);
 	if(*reg & 0x01)
 	{
-		c->reg.F |= CARRY; // Contains old bit 0 data
+		SET_C(c->reg.F); // Contains old bit 0 data
 	}
 	*reg >>= 1;
 	if(old_carry)
@@ -1449,12 +1449,25 @@ void ORA(CPU* c, MMU* m)
 int CPr_r(CPU* c, uint8_t* reg1, uint8_t* reg2)
 {
 	SET_N(c->reg.F);
-	if(CHECK_HALFCARRY(*reg1, *reg2))
+	uint8_t tmp=*reg1;
+	uint8_t tmp2=*reg1;
+	tmp -= *reg2;
+	if(*reg2)
 	{
-		SET_H(c->reg.F);
-	} else RESET_H(c->reg.F);
+		if(tmp >= tmp2)
+		{
+			SET_C(c->reg.F); // ?
+			SET_H(c->reg.F);
+		}
+		else if((tmp & 0xF0) != (tmp2 & 0xF0))
+		{
+			SET_H(c->reg.F);
+		}
+	}
 	if(*reg1 < *reg2) SET_C(c->reg.F);
 	else RESET_C(c->reg.F);
+	if(*reg1 == *reg2) SET_Z(c->reg.F);
+	else RESET_Z(c->reg.F);
 	return 4;
 }
 
@@ -1509,8 +1522,8 @@ void RETNZ(CPU* c, MMU* m)
 
 void POPr_r(CPU* c, MMU* m, uint8_t* reg1, uint8_t* reg2)
 {
-	*reg1=m[c->SP++];
 	*reg2=m[c->SP++];
+	*reg1=m[c->SP++];
 	CYCLES(12);
 }
 
@@ -1607,7 +1620,8 @@ void CALLnn(CPU* c, MMU* m)
 	c->SP-=2;
 	uint8_t lsb=m[c->PC++];
 	uint8_t msb=m[c->PC++];
-	m[c->SP]=c->PC;
+	m[c->SP]=c->PC>>8;
+	m[c->SP+1]=c->PC&0xFF;
 	c->PC=WORD(msb, lsb);
 	CYCLES(12);
 }
@@ -2260,7 +2274,7 @@ int BITr(CPU*c, MMU* m, uint8_t b, uint8_t* reg)
 {
 	RESET_N(c->reg.F);
 	SET_H(c->reg.F);
-	if((*reg >> b) & 0x0) SET_Z(c->reg.F);
+	if(((*reg >> b) & 0x1) == 0) SET_Z(c->reg.F);
 	else RESET_Z(c->reg.F);
 	return 8;
 }
@@ -3305,7 +3319,11 @@ static void write_bios(MMU* m)
 
 static void run_bios(CPU* c, MMU* m)
 {
-	while(c->PC!=256) execute_next(c,m);
+	while(c->PC!=256)
+	{
+		printf("BIOS: %x\n", m[c->PC]);
+		execute_next(c,m);
+	}
 	memset(m, 0, 256); // Clear bios from memory
 }
 
