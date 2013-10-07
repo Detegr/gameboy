@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "cpu.h"
+#include "bios.h"
 
 #define CYCLES(X) (c->c+=X)
 #define WORD(X,Y) ((X<<8)|Y)
@@ -1593,8 +1594,9 @@ void RETZ(CPU* c, MMU* m)
 
 void RET(CPU* c, MMU* m)
 {// Pop two bytes from stack & jump to that address
-	c->PC=WORD(m[c->SP+1], m[c->SP]);
-	c->SP+=2;
+	uint8_t lsb=m[c->SP++];
+	uint8_t msb=m[c->SP++];
+	c->PC=WORD(msb, lsb);
 	CYCLES(8);
 }
 
@@ -1620,8 +1622,8 @@ void CALLnn(CPU* c, MMU* m)
 	c->SP-=2;
 	uint8_t lsb=m[c->PC++];
 	uint8_t msb=m[c->PC++];
-	m[c->SP]=c->PC>>8;
-	m[c->SP+1]=c->PC&0xFF;
+	m[c->SP+1]=c->PC>>8;
+	m[c->SP]=c->PC&0xFF;
 	c->PC=WORD(msb, lsb);
 	CYCLES(12);
 }
@@ -3321,7 +3323,7 @@ static void run_bios(CPU* c, MMU* m)
 {
 	while(c->PC!=256)
 	{
-		printf("BIOS: %x\n", m[c->PC]);
+		printf("BIOS: 0x%x, PC: %d\n", m[c->PC], c->PC);
 		execute_next(c,m);
 	}
 	memset(m, 0, 256); // Clear bios from memory
@@ -3343,8 +3345,9 @@ static void load_rom(char* path, MMU* m)
 void start(CPU* c, char* rompath)
 {
 	MMU* m=c->MMU;
-	reset(c);
+	load_rom(rompath, m);
 	write_bios(m);
+	reset(c);
 	run_bios(c,m);
 	load_rom(rompath, m);
 	while(1)
